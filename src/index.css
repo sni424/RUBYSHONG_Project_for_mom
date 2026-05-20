@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #f8f5f0;
+  --color-surface: #f1ebe4;
+
+  --color-text-primary: #2b2420;
+  --color-text-secondary: #6f6259;
+
+  --color-accent: #b08d57;
+
+  --font-sans: 'Pretendard', sans-serif;
+  --font-display: 'Cormorant Garamond', serif;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+}
