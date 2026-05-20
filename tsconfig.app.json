@@ -21,10 +21,10 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
 
-        /* Paths */
-    "baseUrl": ".",
+
+    /* Paths */
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     }
   
   },
