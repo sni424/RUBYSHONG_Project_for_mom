@@ -1,13 +1,28 @@
-import heroImage from '@/assets/images/hero.png';
+import heroImage from '@/assets/images/home/hero.png';
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-background pt-20 md:pt-24">
-      <div className="mx-auto grid min-h-180 max-w-7xl grid-cols-1 items-center lg:grid-cols-2">
-        <div className="z-10 px-6 py-16 md:px-10 lg:px-16">
+    <section
+      className="
+    relative overflow-hidden
+    h-155
+    md:h-190
+    lg:h-205
+    max-h-225
+    bg-cover bg-center
+    pt-20 md:pt-24
+  "
+      style={{
+        backgroundImage: `url(${heroImage})`,
+      }}
+    >
+      <div className="absolute inset-0 bg-linear-to-r from-background/95 via-background/65 to-transparent" />
+
+      <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-6 md:px-10">
+        <div className="max-w-xl">
           <p className="mb-4 text-sm tracking-[0.28em] text-text-muted">RUBYSHONG JEWELRY</p>
 
-          <h2 className="font-display text-5xl leading-[1.1] text-text-primary md:text-7xl">
+          <h2 className="font-display text-5xl leading-[1.05] text-text-primary md:text-7xl">
             Timeless
             <br />
             Elegance
@@ -21,16 +36,18 @@ const HeroSection = () => {
 
           <button
             type="button"
-            className="mt-10 border border-accent px-8 py-4 text-sm tracking-[0.18em] text-accent transition hover:bg-accent hover:text-white"
+            className="
+              mt-10 border border-accent
+              px-8 py-4
+              text-sm tracking-[0.18em]
+              text-accent
+              transition
+              hover:bg-accent hover:text-white
+              cursor-pointer
+            "
           >
             COLLECTION 보기 →
           </button>
-        </div>
-
-        <div className="relative h-125 w-full md:h-180">
-          <img src={heroImage} alt="Rubyshong Jewelry" className="h-full w-full object-cover" />
-
-          <div className="absolute inset-0 bg-linear-to-r from-background/70 via-transparent to-transparent lg:hidden" />
         </div>
       </div>
     </section>

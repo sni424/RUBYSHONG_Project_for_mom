@@ -3,7 +3,7 @@ import { NAV_ITEMS } from '@/constants/navigation';
 
 const DesktopNav = () => {
   return (
-    <>
+    <div className="hidden w-full items-center lg:flex">
       <nav className="hidden items-center gap-12 text-xs tracking-[0.18em] text-text-secondary lg:flex">
         {NAV_ITEMS.slice(0, 3).map((item) => (
           <a key={item.label} href={item.href} className="transition hover:text-accent">
@@ -35,7 +35,7 @@ const DesktopNav = () => {
           <FaInstagram size={15} />
         </a>
       </nav>
-    </>
+    </div>
   );
 };
 
