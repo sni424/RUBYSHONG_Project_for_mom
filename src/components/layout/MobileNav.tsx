@@ -3,6 +3,7 @@ import { FaInstagram } from 'react-icons/fa6';
 import { HiOutlineMenuAlt4, HiOutlineX } from 'react-icons/hi';
 import { NAV_ITEMS } from '@/constants/navigation';
 import Logo from '@/components/common/Logo';
+import { Link } from 'react-router';
 
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,14 +43,14 @@ const MobileNav = () => {
 
         <nav className="flex flex-col px-5 py-8">
           {NAV_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
+            <Link
+              key={`MobileNav_${item.label}`}
+              to={item.href}
               onClick={() => setIsOpen(false)}
               className="border-b border-line py-6 text-sm tracking-[0.18em] text-text-secondary transition hover:text-accent"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
 
           <a

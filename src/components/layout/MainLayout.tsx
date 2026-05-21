@@ -1,16 +1,14 @@
-import type { ReactNode } from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import { Outlet } from 'react-router';
 
-interface MainLayoutProps {
-  children: ReactNode;
-}
-
-const MainLayout = ({ children }: MainLayoutProps) => {
+const MainLayout = () => {
   return (
     <div className="min-h-screen bg-background text-text-primary">
       <Header />
-      <main>{children}</main>
+      <main>
+        <Outlet />
+      </main>
       <Footer />
     </div>
   );

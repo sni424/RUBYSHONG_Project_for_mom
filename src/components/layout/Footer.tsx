@@ -1,4 +1,5 @@
 import { FaComment, FaPhoneAlt } from 'react-icons/fa';
+import { Link } from 'react-router';
 
 const Footer = () => {
   return (
@@ -20,12 +21,12 @@ const Footer = () => {
               10:30 - 20:00 (월-일)
             </p>
 
-            <a
-              href="#store"
+            <Link
+              to="/stores"
               className="mt-5 inline-block text-sm tracking-[0.12em] text-text-secondary transition hover:text-accent"
             >
               오시는 길 →
-            </a>
+            </Link>
           </div>
 
           <div id="reservation" className="border-line md:border-r md:px-10">

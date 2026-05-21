@@ -1,5 +1,6 @@
 import { FaInstagram } from 'react-icons/fa6';
 import { NAV_ITEMS } from '@/constants/navigation';
+import { Link } from 'react-router';
 
 const DesktopNav = () => {
   return (
@@ -20,9 +21,13 @@ const DesktopNav = () => {
 
       <nav className="ml-auto hidden items-center gap-8 text-xs tracking-[0.18em] text-text-secondary lg:flex">
         {NAV_ITEMS.slice(3).map((item) => (
-          <a key={item.label} href={item.href} className="transition hover:text-accent">
+          <Link
+            key={`DeskTopNav_${item.label}`}
+            to={item.href}
+            className="transition hover:text-accent"
+          >
             {item.label}
-          </a>
+          </Link>
         ))}
 
         <a
