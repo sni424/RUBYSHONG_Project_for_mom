@@ -54,7 +54,7 @@ const MobileNav = () => {
           ))}
 
           <a
-            href="https://www.instagram.com"
+            href="https://www.instagram.com/naver_official/"
             target="_blank"
             rel="noreferrer"
             className="mt-10 flex items-center gap-3 text-sm tracking-[0.18em] text-text-secondary"

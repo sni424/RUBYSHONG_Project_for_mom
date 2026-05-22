@@ -31,7 +31,7 @@ const DesktopNav = () => {
         ))}
 
         <a
-          href="https://www.instagram.com"
+          href="https://www.instagram.com/naver_official/"
           target="_blank"
           rel="noreferrer"
           aria-label="Instagram"

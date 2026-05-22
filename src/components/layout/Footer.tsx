@@ -58,18 +58,20 @@ const Footer = () => {
             </p>
 
             <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
+              <a
+                href="http://pf.kakao.com/_qHBbX/chat"
+                target="_blank"
+                rel="noreferrer"
                 className="flex h-14 w-full min-w-0 items-center justify-center gap-3 border border-line px-5 text-sm text-text-secondary transition hover:border-accent hover:text-accent sm:w-auto
                 cursor-pointer
                 "
               >
                 <FaComment size={15} />
                 카카오톡 상담
-              </button>
+              </a>
 
               <a
-                href="tel:021234567"
+                href="tel:01033938107"
                 className="flex h-14 w-full min-w-0 items-center justify-center gap-3 border border-line px-5 text-sm text-text-secondary transition hover:border-accent hover:text-accent sm:w-auto
                 cursor-pointer
                 "
