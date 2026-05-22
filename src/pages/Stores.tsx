@@ -105,6 +105,25 @@ const Stores = () => {
         <div className="overflow-hidden rounded-xl border border-line">
           <StoreMap />
         </div>
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <a
+            href="https://map.kakao.com/link/to/RUBYSHONG,37.563483,126.803168"
+            target="_blank"
+            rel="noreferrer"
+            className="flex h-12 items-center justify-center rounded-md border border-[#B08B57] bg-[#B08B57] px-6 text-sm tracking-wide text-white transition hover:opacity-90"
+          >
+            카카오맵 길찾기
+          </a>
+
+          <a
+            href="https://map.naver.com/v5/search/서울특별시 강서구 하늘길 38"
+            target="_blank"
+            rel="noreferrer"
+            className="flex h-12 items-center justify-center rounded-md border border-[#D8C8B0] bg-transparent px-6 text-sm tracking-wide text-[#6B5B4D] transition hover:bg-[#F7F1E8]"
+          >
+            네이버지도 보기
+          </a>
+        </div>
 
         {/* Info + Image */}
 

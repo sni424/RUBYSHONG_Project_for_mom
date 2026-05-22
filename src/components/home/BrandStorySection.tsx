@@ -1,4 +1,5 @@
 import storyImage from '@/assets/images/home/story.png';
+import { Link } from 'react-router';
 
 const BrandStorySection = () => {
   return (
@@ -34,8 +35,8 @@ const BrandStorySection = () => {
             좋은 재료와 바른 마음, 변하지 않는 가치를 전합니다.
           </p>
 
-          <button
-            type="button"
+          <Link
+            to={'/about'}
             className="
               mt-10 flex items-center gap-3
               text-sm tracking-[0.12em]
@@ -47,7 +48,7 @@ const BrandStorySection = () => {
           >
             더 알아보기
             <span>→</span>
-          </button>
+          </Link>
         </div>
       </div>
     </section>
