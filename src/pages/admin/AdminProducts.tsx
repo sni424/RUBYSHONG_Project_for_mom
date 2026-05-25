@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react';
+import ProductCreateModal from '@/components/modals/ProductCreateModal';
 
 const products = [
   {
@@ -50,8 +51,12 @@ const formatPrice = (price: number) => `${price.toLocaleString()}원`;
 
 const AdminProducts = () => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  //현재 페이지
   const [currentPage, setCurrentPage] = useState(1);
+  //아이템 나타낼 개수
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  //모달 state
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
@@ -98,6 +103,7 @@ const AdminProducts = () => {
 
         <button
           type="button"
+          onClick={() => setIsCreateModalOpen(true)}
           className="flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700 cursor-pointer"
         >
           <Plus size={18} />
@@ -347,6 +353,7 @@ const AdminProducts = () => {
           </select>
         </div>
       </div>
+      <ProductCreateModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
     </section>
   );
 };
