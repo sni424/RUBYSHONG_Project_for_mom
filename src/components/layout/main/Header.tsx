@@ -1,5 +1,5 @@
-import DesktopNav from '@/components/layout/DesktopNav';
-import MobileNav from '@/components/layout/MobileNav';
+import DesktopNav from '@/components/layout/main/DesktopNav';
+import MobileNav from '@/components/layout/main/MobileNav';
 
 const Header = () => {
   return (

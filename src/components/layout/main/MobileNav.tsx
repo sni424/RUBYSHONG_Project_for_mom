@@ -22,7 +22,7 @@ const MobileNav = () => {
         <HiOutlineMenuAlt4 size={25} />
       </button>
       <div
-        className={`fixed inset-0 z-[100] bg-background transition-all duration-500 ${
+        className={`fixed inset-0 z-100 bg-background transition-all duration-500 ${
           isOpen
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none -translate-y-4 opacity-0'
