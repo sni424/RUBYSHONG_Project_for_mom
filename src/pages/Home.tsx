@@ -9,12 +9,12 @@ const Home = () => {
   const [product, setProducts] = useState();
 
   useEffect(() => {
-    // const fetchProducts = async () => {
-    //   const data = await getProducts();
-    //   setProducts(data);
-    // };
+    const fetchProducts = async () => {
+      const data = await getProducts();
+      setProducts(data);
+    };
 
-    // fetchProducts();
+    fetchProducts();
     console.log(product);
   }, []);
 
