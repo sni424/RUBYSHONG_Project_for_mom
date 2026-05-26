@@ -1,14 +1,16 @@
-import { createProduct, uploadProductImage } from '@/api/productApi';
-import type { ProductFormData } from '@/constants/type';
+import { updateProduct, uploadProductImage } from '@/api/productApi';
+import type { Product, ProductFormData } from '@/constants/type';
 import { X, ImagePlus } from 'lucide-react';
 import { useState } from 'react';
 
-type ProductCreateModalProps = {
+type ProductEditModalProps = {
   isOpen: boolean;
+  product: Product;
   onClose: () => void;
   onSuccess?: () => void;
 };
 
+// 상품 수정 폼 초기값
 const productFormData: ProductFormData = {
   name: '',
   category: '',
@@ -16,14 +18,30 @@ const productFormData: ProductFormData = {
   discountRate: '',
   finalPrice: '',
   stock: '',
-  status: 'selling',
+  status: 'selling' as Product['status'],
   summary: '',
   description: '',
 };
 
-const ProductCreateModal = ({ isOpen, onClose, onSuccess }: ProductCreateModalProps) => {
+// 상품 데이터를 수정 폼 값으로 변환
+const getProductFormData = (product: Product) => ({
+  name: product.name,
+  category: product.category,
+  price: String(product.price),
+  discountRate: String(product.discountRate),
+  finalPrice: String(product.finalPrice),
+  stock: String(product.stock),
+  status: product.status,
+  summary: product.summary,
+  description: product.description,
+});
+
+const ProductEditModal = ({ isOpen, product, onClose, onSuccess }: ProductEditModalProps) => {
+  // 상품 수정 폼 데이터
+  const [formData, setFormData] = useState(() => getProductFormData(product));
+
   // 서버에서 받은 최종 이미지 URL
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [thumbnailUrl, setThumbnailUrl] = useState(product.thumbnailUrl);
 
   // 이미지 업로드 중인지 확인
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -31,10 +49,7 @@ const ProductCreateModal = ({ isOpen, onClose, onSuccess }: ProductCreateModalPr
   // 사용자가 이미지 영역에 파일을 드래그 중인지 확인
   const [isDragging, setIsDragging] = useState(false);
 
-  // 상품 등록 폼 데이터
-  const [formData, setFormData] = useState(productFormData);
-
-  //초기화
+  // 상품 수정 폼 초기화
   const resetForm = () => {
     setFormData(productFormData);
     setThumbnailUrl('');
@@ -42,6 +57,7 @@ const ProductCreateModal = ({ isOpen, onClose, onSuccess }: ProductCreateModalPr
     setIsUploadingImage(false);
   };
 
+  // 모달 닫기 + 입력값 초기화
   const handleClose = () => {
     resetForm();
     onClose();
@@ -76,7 +92,6 @@ const ProductCreateModal = ({ isOpen, onClose, onSuccess }: ProductCreateModalPr
 
       // 서버에 이미지 업로드 후 최종 이미지 URL 받기
       const imageUrl = await uploadProductImage(file);
-      console.log('imageUrl', imageUrl);
 
       // 서버에서 받은 최종 이미지 URL 저장
       setThumbnailUrl(imageUrl);
@@ -89,15 +104,23 @@ const ProductCreateModal = ({ isOpen, onClose, onSuccess }: ProductCreateModalPr
     }
   };
 
-  // 상품 등록 요청
+  // 상품 수정 요청
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // 수정할 상품이 없으면 요청 막기
+    if (!product) {
+      alert('수정할 상품 정보가 없습니다.');
+      return;
+    }
+
+    // 이미지 URL이 없으면 수정 막기
     if (!thumbnailUrl) {
       alert('상품 이미지를 업로드해주세요.');
       return;
     }
 
+    // 서버로 보낼 상품 수정 데이터
     const productData = {
       ...formData,
       price: Number(formData.price),
@@ -105,32 +128,40 @@ const ProductCreateModal = ({ isOpen, onClose, onSuccess }: ProductCreateModalPr
       finalPrice: formData.finalPrice ? Number(formData.finalPrice) : Number(formData.price),
       stock: Number(formData.stock),
       thumbnailUrl,
+      isNew: product.isNew,
+      isBest: product.isBest,
+      isVisible: formData.status !== 'hidden',
     };
 
     try {
-      await createProduct(productData);
+      // 상품 데이터 서버 수정
+      await updateProduct(product.id, productData);
 
-      alert('상품이 등록되었습니다.');
+      alert('상품이 수정되었습니다.');
+
       // 부모 상품 목록 새로고침
       onSuccess?.();
 
+      // 수정 성공 후 폼 초기화
       resetForm();
+
+      // 모달 닫기
       onClose();
     } catch (error) {
       console.error(error);
-
-      alert('상품 등록에 실패했습니다.');
+      alert('상품 수정에 실패했습니다.');
     }
   };
-  if (!isOpen) return null;
+
+  if (!isOpen || !product) return null;
 
   return (
     <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/45 px-4 py-6 sm:py-10 lg:flex lg:items-center lg:justify-center">
       <div className="mx-auto w-full max-w-3xl rounded-2xl bg-white p-4 shadow-2xl sm:p-6 lg:mx-0">
         <div className="mb-6 flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">상품 등록</h2>
-            <p className="mt-1 text-sm text-slate-500">새로운 상품 정보를 입력해주세요.</p>
+            <h2 className="text-xl font-bold text-slate-900">상품 수정</h2>
+            <p className="mt-1 text-sm text-slate-500">상품 정보를 수정해주세요.</p>
           </div>
 
           <button
@@ -311,7 +342,7 @@ const ProductCreateModal = ({ isOpen, onClose, onSuccess }: ProductCreateModalPr
               disabled={isUploadingImage}
               className="h-11 rounded-xl bg-violet-600 px-6 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              등록하기
+              수정하기
             </button>
           </div>
         </form>
@@ -370,4 +401,4 @@ const Select = ({ label, required, children, ...props }: SelectProps) => {
   );
 };
 
-export default ProductCreateModal;
+export default ProductEditModal;

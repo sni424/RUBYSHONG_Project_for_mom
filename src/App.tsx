@@ -8,7 +8,8 @@ import ProtectedRoute from '@/routes/ProtectedRoute';
 import MainLayout from '@/components/layout/main/MainLayout';
 import AdminLayout from '@/components/layout/admin/AdminLayout';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
-import AdminProducts from './pages/admin/AdminProducts';
+import AdminProducts from '@/pages/admin/AdminProducts';
+import CollectionPage from '@/pages/Collection';
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/collection" element={<CollectionPage />} />
           <Route path="/stores" element={<Stores />} />
           <Route path="/about" element={<About />} />
         </Route>

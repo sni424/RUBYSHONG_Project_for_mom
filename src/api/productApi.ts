@@ -1,20 +1,38 @@
-import type { Product } from '@/constants/type';
+import type { Product, UpdateProductPayload } from '@/constants/type';
 import axios from 'axios';
 
+export type ProductSearchParams = {
+  category?: string;
+  search?: string;
+};
+
 // 상품 목록 가져오기
-export const getProducts = async (): Promise<Product[]> => {
+export const getProducts = async (params?: ProductSearchParams): Promise<Product[]> => {
   // 백엔드 상품 목록 API 요청
-  const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/products`);
+  const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/products`, {
+    params: {
+      ...(params?.category ? { category: params.category } : {}),
+      ...(params?.search ? { search: params.search } : {}),
+    },
+  });
 
   // 서버에서 받은 상품 배열 반환
   return response.data.data;
 };
 
 // 카테고리별 상품 가져오기
-export const getProductsByCategory = async (category: string): Promise<Product[]> => {
+export const getProductsByCategory = async (
+  category: string,
+  search?: string,
+): Promise<Product[]> => {
   // 백엔드 카테고리 상품 목록 API 요청
   const response = await axios.get(
     `${import.meta.env.VITE_API_URL}/api/products/category/${category}`,
+    {
+      params: {
+        ...(search ? { search } : {}),
+      },
+    },
   );
 
   // 서버에서 받은 상품 배열 반환
@@ -58,21 +76,8 @@ export const uploadProductImage = async (file: File) => {
   return result.data.imageUrl;
 };
 
-export type CreateProductPayload = {
-  name: string;
-  category: string;
-  price: number;
-  discountRate: number;
-  finalPrice: number | null;
-  stock: number;
-  status: string;
-  summary: string;
-  description: string;
-  thumbnailUrl: string;
-};
-
 // 상품 등록
-export const createProduct = async (productData: CreateProductPayload) => {
+export const createProduct = async (productData: Product) => {
   const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/products`, productData, {
     headers: {
       'Content-Type': 'application/json',
@@ -80,4 +85,25 @@ export const createProduct = async (productData: CreateProductPayload) => {
   });
 
   return response.data.data;
+};
+
+// 상품 수정
+export const updateProduct = async (productId: number, productData: UpdateProductPayload) => {
+  // 백엔드 상품 수정 API 요청
+  const response = await axios.patch(
+    `${import.meta.env.VITE_API_URL}/api/products/${productId}`,
+    productData,
+  );
+
+  // 수정된 상품 데이터 반환
+  return response.data.data;
+};
+
+// 상품 삭제
+export const deleteProduct = async (productId: number) => {
+  // 백엔드 상품 삭제 API 요청
+  const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/products/${productId}`);
+
+  // 삭제 결과 반환
+  return response.data;
 };

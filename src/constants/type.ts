@@ -1,5 +1,4 @@
 // 상품 타입
-// 상품 타입
 export type Product = {
   id: number;
   name: string;
@@ -44,4 +43,40 @@ export type Product = {
 
   // 수정일
   updatedAt: string;
+};
+
+export type ProductFormData = {
+  name: string;
+  category: string;
+  price: string;
+  discountRate: string;
+  finalPrice: string;
+  stock: string;
+  status: Product['status'];
+  summary: string;
+  description: string;
+};
+
+// 상품 상태 타입
+export type ProductStatus = Product['status'];
+
+// 상품 등록 요청 타입
+export type CreateProductPayload = {
+  name: string;
+  category: string;
+  price: number;
+  finalPrice: number;
+  discountRate: number;
+  summary: string;
+  description: string;
+  thumbnailUrl: string;
+  stock: number;
+  status: ProductStatus;
+};
+
+// 상품 수정 요청 타입
+export type UpdateProductPayload = CreateProductPayload & {
+  isNew: boolean;
+  isBest: boolean;
+  isVisible: boolean;
 };

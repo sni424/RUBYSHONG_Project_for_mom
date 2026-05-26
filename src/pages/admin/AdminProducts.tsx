@@ -1,21 +1,39 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react';
 import ProductCreateModal from '@/components/modals/ProductCreateModal';
-import { getProducts } from '@/api/productApi';
+import { getProducts, type ProductSearchParams } from '@/api/productApi';
 import type { Product } from '@/constants/type';
 import { formatKoreanDateTime } from '@/constants/utils';
+import ProductEditModal from '@/components/modals/ProductEditModal';
 
 const formatPrice = (price: number) => `${price.toLocaleString()}원`;
+
+const productCategories = [
+  { label: '반지', value: 'ring' },
+  { label: '목걸이', value: 'necklace' },
+  { label: '귀걸이', value: 'earring' },
+  { label: '팔찌', value: 'bracelet' },
+];
+
+const getCategoryLabel = (category: string) => {
+  return productCategories.find((item) => item.value === category)?.label ?? category;
+};
 
 const AdminProducts = () => {
   // 서버에서 가져온 상품 목록
   const [products, setProducts] = useState<Product[]>([]);
 
   // 상품 목록 로딩 상태
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 상품 목록 조회 에러 메시지
   const [errorMessage, setErrorMessage] = useState('');
+
+  // 상품 검색어
+  const [searchKeyword, setSearchKeyword] = useState('');
+
+  // 선택된 카테고리
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   // 선택된 상품 id 목록
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -29,8 +47,20 @@ const AdminProducts = () => {
   // 상품 등록 모달 열림 여부
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  // 상품 수정 모달 열림 여부
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // 수정할 상품 데이터
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // 확대해서 볼 이미지 URL
+  const [previewImageUrl, setPreviewImageUrl] = useState('');
+
+  // 확대 이미지 alt 텍스트
+  const [previewImageAlt, setPreviewImageAlt] = useState('');
+
   // 전체 페이지 수
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const totalPages = Math.max(Math.ceil(products.length / itemsPerPage), 1);
 
   // 현재 페이지에 보여줄 상품 목록
   const paginatedProducts = products.slice(
@@ -48,55 +78,75 @@ const AdminProducts = () => {
   // 선택된 상품 개수
   const selectedCount = selectedIds.length;
 
+  // 상품 수정 모달 열기
+  const handleOpenEditModal = (product: Product) => {
+    setSelectedProduct(product);
+    setIsEditModalOpen(true);
+  };
+
+  // 상품 수정 모달 닫기
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedProduct(null);
+  };
+
+  // 이미지 확대 모달 열기
+  const handleOpenImagePreview = (product: Product) => {
+    setPreviewImageUrl(product.thumbnailUrl);
+    setPreviewImageAlt(product.name);
+  };
+
+  // 이미지 확대 모달 닫기
+  const handleCloseImagePreview = () => {
+    setPreviewImageUrl('');
+    setPreviewImageAlt('');
+  };
+
   // 선택 상태 문구
   const selectedText = useMemo(() => {
     return selectedCount > 0 ? `${selectedCount}개 선택됨` : '선택 없음';
   }, [selectedCount]);
 
-  // 현재 페이지 상품 전체 선택/해제
-  const handleSelectAll = () => {
-    // 현재 페이지 상품이 모두 선택되어 있으면 현재 페이지 상품만 선택 해제
-    if (isAllSelected) {
-      setSelectedIds((prev) => prev.filter((id) => !currentPageIds.includes(id)));
-      return;
-    }
-
-    // 현재 페이지 상품을 기존 선택 목록에 추가
-    setSelectedIds((prev) => [...new Set([...prev, ...currentPageIds])]);
-  };
-
-  // 개별 상품 선택/해제
-  const handleSelect = (id: number) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((selectedId) => selectedId !== id) : [...prev, id],
-    );
-  };
-
-  // 상품 목록 새로고침
-  const refreshProducts = async () => {
+  // 상품 목록 조회
+  const fetchProducts = async (params?: ProductSearchParams) => {
     try {
-      // 새로고침 로딩 시작
       setIsLoading(true);
       setErrorMessage('');
 
-      // 서버에서 최신 상품 목록 가져오기
-      const data = await getProducts();
+      const data = await getProducts(params);
 
-      // 상품 목록 상태 업데이트
       setProducts(data);
-
-      // 선택 상태 초기화
       setSelectedIds([]);
-
-      // 첫 페이지로 이동
       setCurrentPage(1);
     } catch (error) {
       console.error(error);
       setErrorMessage('상품 목록을 불러오지 못했습니다.');
     } finally {
-      // 새로고침 로딩 종료
       setIsLoading(false);
     }
+  };
+
+  // 현재 검색/카테고리 조건으로 상품 목록 조회
+  const handleSearchProducts = () => {
+    fetchProducts({
+      search: searchKeyword.trim(),
+      category: selectedCategory,
+    });
+  };
+
+  // 필터 초기화
+  const handleResetFilters = () => {
+    setSearchKeyword('');
+    setSelectedCategory('');
+    fetchProducts();
+  };
+
+  // 상품 목록 새로고침
+  const refreshProducts = async () => {
+    fetchProducts({
+      search: searchKeyword.trim(),
+      category: selectedCategory,
+    });
   };
 
   // 첫 진입 시 상품 목록 조회
@@ -128,6 +178,25 @@ const AdminProducts = () => {
       isMounted = false;
     };
   }, []);
+
+  // 현재 페이지 상품 전체 선택/해제
+  const handleSelectAll = () => {
+    // 현재 페이지 상품이 모두 선택되어 있으면 현재 페이지 상품만 선택 해제
+    if (isAllSelected) {
+      setSelectedIds((prev) => prev.filter((id) => !currentPageIds.includes(id)));
+      return;
+    }
+
+    // 현재 페이지 상품을 기존 선택 목록에 추가
+    setSelectedIds((prev) => [...new Set([...prev, ...currentPageIds])]);
+  };
+
+  // 개별 상품 선택/해제
+  const handleSelect = (id: number) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((selectedId) => selectedId !== id) : [...prev, id],
+    );
+  };
 
   return (
     <section>
@@ -168,21 +237,59 @@ const AdminProducts = () => {
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="grid gap-3 border-b border-slate-100 p-4 md:grid-cols-[1fr_180px_160px_160px_auto]">
+        <div className="grid gap-3 border-b border-slate-100 p-4 md:grid-cols-[1fr_180px_160px_160px_auto_auto]">
           <label className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 px-4">
             <Search size={18} className="text-slate-400" />
             <input
               type="text"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchProducts();
+                }
+              }}
               placeholder="상품명, 슬러그 검색"
               className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
             />
           </label>
 
-          <FilterButton label="전체 카테고리" />
+          <select
+            value={selectedCategory}
+            onChange={(e) => {
+              const category = e.target.value;
+              setSelectedCategory(category);
+              fetchProducts({
+                search: searchKeyword.trim(),
+                category,
+              });
+            }}
+            className="h-11 rounded-xl border border-slate-200 px-4 text-sm font-medium text-slate-700 cursor-pointer"
+          >
+            <option value="">전체 카테고리</option>
+            {productCategories.map((category) => (
+              <option key={category.value} value={category.value}>
+                {category.label}
+              </option>
+            ))}
+          </select>
+
           <FilterButton label="전체 상태" />
           <FilterButton label="전체 노출" />
 
-          <button className="h-11 rounded-xl border border-slate-200 px-5 text-sm font-semibold text-slate-700">
+          <button
+            type="button"
+            onClick={handleSearchProducts}
+            className="h-11 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white cursor-pointer hover:bg-slate-800"
+          >
+            검색
+          </button>
+
+          <button
+            type="button"
+            onClick={handleResetFilters}
+            className="h-11 rounded-xl border border-slate-200 px-5 text-sm font-semibold text-slate-700 cursor-pointer hover:bg-slate-50"
+          >
             초기화
           </button>
         </div>
@@ -202,6 +309,12 @@ const AdminProducts = () => {
                 노출 상태 변경
               </button>
             </div>
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="border-b border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+            {errorMessage}
           </div>
         )}
 
@@ -246,6 +359,7 @@ const AdminProducts = () => {
                     <div className="flex items-center gap-3">
                       <div className="h-11 w-11 overflow-hidden rounded-lg bg-slate-100">
                         <img
+                          onClick={() => handleOpenImagePreview(product)}
                           src={product.thumbnailUrl}
                           alt={product.name}
                           className="h-full w-full object-cover"
@@ -259,7 +373,7 @@ const AdminProducts = () => {
                     </div>
                   </td>
 
-                  <td className="px-4 py-3">{product.category}</td>
+                  <td className="px-4 py-3">{getCategoryLabel(product.category)}</td>
                   <td className="px-4 py-3">{formatPrice(product.price)}</td>
                   <td className="px-4 py-3 text-red-500">{product.discountRate}%</td>
                   <td className="px-4 py-3 font-semibold">{formatPrice(product.finalPrice)}</td>
@@ -281,7 +395,10 @@ const AdminProducts = () => {
 
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-2">
-                      <button className="rounded-lg border border-violet-200 px-3 py-2 text-xs font-semibold text-violet-600 hover:bg-violet-600 hover:text-white cursor-pointer">
+                      <button
+                        onClick={() => handleOpenEditModal(product)}
+                        className="rounded-lg border border-violet-200 px-3 py-2 text-xs font-semibold text-violet-600 hover:bg-violet-600 hover:text-white cursor-pointer"
+                      >
                         수정
                       </button>
                       <button className="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
@@ -309,6 +426,7 @@ const AdminProducts = () => {
 
                   <div className="h-20 w-20 overflow-hidden rounded-xl bg-slate-100">
                     <img
+                      onClick={() => handleOpenImagePreview(product)}
                       src={product.thumbnailUrl}
                       alt={product.name}
                       className="h-full w-full object-cover"
@@ -326,16 +444,19 @@ const AdminProducts = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-3 text-sm">
-                <Info label="카테고리" value={product.category} />
+                <Info label="카테고리" value={getCategoryLabel(product.category)} />
                 <Info label="재고" value={`${product.stock}개`} />
                 <Info label="가격" value={formatPrice(product.price)} />
                 <Info label="최종 가격" value={formatPrice(product.finalPrice)} />
                 <Info label="할인율" value={`${product.discountRate}%`} />
-                <Info label="등록일" value={product.createdAt} />
+                <Info label="등록일" value={formatKoreanDateTime(product.createdAt)} />
               </div>
 
               <div className="mt-4 flex gap-2">
-                <button className="flex-1 rounded-xl border border-violet-200 py-2 text-sm font-semibold text-violet-600">
+                <button
+                  onClick={() => handleOpenEditModal(product)}
+                  className="flex-1 rounded-xl border border-violet-200 py-2 text-sm font-semibold text-violet-600"
+                >
                   수정
                 </button>
                 <button className="flex-1 rounded-xl border border-red-200 py-2 text-sm font-semibold text-red-500">
@@ -345,6 +466,18 @@ const AdminProducts = () => {
             </div>
           ))}
         </div>
+
+        {!isLoading && products.length === 0 && (
+          <div className="border-t border-slate-100 px-4 py-12 text-center text-sm font-semibold text-slate-500">
+            조회된 상품이 없습니다.
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="border-t border-slate-100 px-4 py-12 text-center text-sm font-semibold text-slate-500">
+            상품 목록을 불러오는 중입니다.
+          </div>
+        )}
 
         <div className="flex flex-col gap-4 border-t border-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-500">총 {products.length}개 상품</p>
@@ -393,11 +526,45 @@ const AdminProducts = () => {
           </select>
         </div>
       </div>
+      {previewImageUrl && (
+        <div
+          className="fixed inset-0 z-120 flex items-center justify-center bg-black/70 px-4 py-6"
+          onClick={handleCloseImagePreview}
+        >
+          <div
+            className="relative max-h-full w-full max-w-4xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={handleCloseImagePreview}
+              className="absolute -top-12 right-0 rounded-lg bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+            >
+              닫기
+            </button>
+
+            <img
+              src={previewImageUrl}
+              alt={previewImageAlt}
+              className="max-h-[80vh] w-full rounded-2xl object-contain"
+            />
+          </div>
+        </div>
+      )}
       <ProductCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={refreshProducts}
       />
+      {isEditModalOpen && selectedProduct && (
+        <ProductEditModal
+          key={selectedProduct.id}
+          isOpen={isEditModalOpen}
+          product={selectedProduct}
+          onClose={handleCloseEditModal}
+          onSuccess={refreshProducts}
+        />
+      )}
     </section>
   );
 };
@@ -412,15 +579,23 @@ const FilterButton = ({ label }: { label: string }) => {
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
-  const isSoldOut = status === '품절';
+  const statusStyle =
+    {
+      selling: 'bg-emerald-50 text-emerald-600',
+      soldout: 'bg-orange-50 text-orange-500',
+      hidden: 'bg-slate-100 text-slate-500',
+    }[status] ?? 'bg-emerald-50 text-emerald-600';
+
+  const statusLabel =
+    {
+      selling: '판매 중',
+      soldout: '품절',
+      hidden: '숨김',
+    }[status] ?? status;
 
   return (
-    <span
-      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-        isSoldOut ? 'bg-orange-50 text-orange-500' : 'bg-emerald-50 text-emerald-600'
-      }`}
-    >
-      {status}
+    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyle}`}>
+      {statusLabel}
     </span>
   );
 };
