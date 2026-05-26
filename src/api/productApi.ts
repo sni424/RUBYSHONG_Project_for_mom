@@ -1,4 +1,4 @@
-import type { Product, UpdateProductPayload } from '@/constants/type';
+import type { CreateProductPayload, Product, UpdateProductPayload } from '@/constants/type';
 import axios from 'axios';
 
 export type ProductSearchParams = {
@@ -77,7 +77,7 @@ export const uploadProductImage = async (file: File) => {
 };
 
 // 상품 등록
-export const createProduct = async (productData: Product) => {
+export const createProduct = async (productData: CreateProductPayload) => {
   const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/products`, productData, {
     headers: {
       'Content-Type': 'application/json',
