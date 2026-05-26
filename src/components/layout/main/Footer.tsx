@@ -1,7 +1,49 @@
 import { FaComment, FaPhoneAlt } from 'react-icons/fa';
 import { Link } from 'react-router';
 
+const STORE_PHONE_NUMBER = '01033938107';
+
 const Footer = () => {
+  // 모바일 기기인지 확인
+  const isMobileDevice = () => {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  };
+
+  // 전화 문의 연결
+  const handlePhoneCall = () => {
+    // PC에서는 전화 연결이 어려우니 안내
+    if (!isMobileDevice()) {
+      alert('전화 문의는 모바일에서 이용해주세요.');
+      return;
+    }
+
+    // 모바일 전화 앱 열기
+    window.location.href = `tel:${STORE_PHONE_NUMBER}`;
+  };
+
+  // iOS 기기인지 확인
+  const isIOSDevice = () => {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  };
+
+  // 상담 예약 문자 보내기
+  const handleReservationSms = () => {
+    // PC에서는 문자 앱을 열 수 없으니 안내
+    if (!isMobileDevice()) {
+      alert('문자 상담은 모바일에서 이용해주세요.');
+      return;
+    }
+
+    // 상품명이 포함된 문자 내용
+    const message = `[루비숑 상담 예약]\n상담 예약을 문의드립니다.`;
+
+    // iOS는 &body, Android는 ?body가 더 안정적
+    const separator = isIOSDevice() ? '&' : '?';
+
+    // 문자 앱 열기
+    window.location.href = `sms:${STORE_PHONE_NUMBER}${separator}body=${encodeURIComponent(message)}`;
+  };
+
   return (
     <footer id="contact" className="bg-surface">
       <div className="mx-auto w-full max-w-7xl px-5 py-10 md:px-10 md:py-10">
@@ -42,6 +84,7 @@ const Footer = () => {
 
             <button
               type="button"
+              onClick={handleReservationSms}
               className="mt-6 w-full max-w-55 border border-accent px-8 py-4 text-sm tracking-[0.08em] text-accent transition hover:bg-accent hover:text-white md:w-45
               cursor-pointer
               "
@@ -69,16 +112,14 @@ const Footer = () => {
                 <FaComment size={15} />
                 카카오톡 상담
               </a>
-
-              <a
-                href="tel:01033938107"
-                className="flex h-14 w-full min-w-0 items-center justify-center gap-3 border border-line px-5 text-sm text-text-secondary transition hover:border-accent hover:text-accent sm:w-auto
-                cursor-pointer
-                "
+              <button
+                type="button"
+                onClick={handlePhoneCall}
+                className="flex h-14 w-full min-w-0 items-center justify-center gap-3 border border-line px-5 text-sm text-text-secondary transition hover:border-accent hover:text-accent sm:w-auto cursor-pointer"
               >
                 <FaPhoneAlt size={14} />
                 전화 문의
-              </a>
+              </button>
             </div>
 
             <div className="pointer-events-none absolute -bottom-7.5 right-0 hidden text-[120px] leading-none text-accent/15 lg:block">
