@@ -1,4 +1,35 @@
-import { collections } from '@/constants/collections';
+import ringImage from '@/assets/images/home/ring.png';
+import necklaceImage from '@/assets/images/home/necklace.png';
+import earringImage from '@/assets/images/home/earring.png';
+import braceletImage from '@/assets/images/home/bracelet.png';
+import { Link } from 'react-router';
+
+const collections = [
+  {
+    title: 'Ring',
+    subtitle: '섬세한 반짝임',
+    image: ringImage,
+    category: 'ring',
+  },
+  {
+    title: 'Necklace',
+    subtitle: '우아한 실루엣',
+    image: necklaceImage,
+    category: 'necklace',
+  },
+  {
+    title: 'Earring',
+    subtitle: '빛나는 포인트',
+    image: earringImage,
+    category: 'earring',
+  },
+  {
+    title: 'Bracelet',
+    subtitle: '손끝의 아름다움',
+    image: braceletImage,
+    category: 'bracelet',
+  },
+];
 
 const CollectionSection = () => {
   return (
@@ -19,6 +50,7 @@ const CollectionSection = () => {
               title={item.title}
               subtitle={item.subtitle}
               image={item.image}
+              category={item.category}
             />
           ))}
         </div>
@@ -33,11 +65,15 @@ type CollectionCardProps = {
   title: string;
   subtitle: string;
   image: string;
+  category: string;
 };
 
-const CollectionCard = ({ title, subtitle, image }: CollectionCardProps) => {
+const CollectionCard = ({ title, subtitle, image, category }: CollectionCardProps) => {
   return (
-    <article className="group relative overflow-hidden bg-[#efe8df] cursor-pointer">
+    <Link
+      to={`/collection?category=${category}`}
+      className="group relative block overflow-hidden bg-[#efe8df] cursor-pointer"
+    >
       <div className="overflow-hidden">
         <img
           src={image}
@@ -66,18 +102,17 @@ const CollectionCard = ({ title, subtitle, image }: CollectionCardProps) => {
 
         <p className="mt-1 text-sm text-white/80">{subtitle}</p>
 
-        <button
-          type="button"
+        <span
           className="
-            mt-5 text-xs tracking-[0.18em]
+            mt-5 inline-block text-xs tracking-[0.18em]
             text-white
             transition
-            hover:opacity-70
+            group-hover:opacity-70
           "
         >
           VIEW MORE →
-        </button>
+        </span>
       </div>
-    </article>
+    </Link>
   );
 };

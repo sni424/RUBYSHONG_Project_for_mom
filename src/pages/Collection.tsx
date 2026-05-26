@@ -4,6 +4,7 @@ import { getProducts } from '@/api/productApi';
 import type { Product } from '@/constants/type';
 import collectionHero from '@/assets/images/collection/collection-hero.png';
 import ProductDetailModal from '@/components/modals/ProductDetailModal';
+import { useSearchParams } from 'react-router';
 
 const productCategories = [
   { label: '전체', value: '' },
@@ -25,8 +26,14 @@ const CollectionPage = () => {
   // 서버에서 가져온 상품 목록
   const [products, setProducts] = useState<Product[]>([]);
 
+  // URL 쿼리스트링을 읽고 변경하기 위한 훅
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // URL의 category 값을 가져와 초기 카테고리로 사용
+  const initialCategory = searchParams.get('category') ?? '';
+
   // 선택된 카테고리
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
 
   // 선택된 정렬 방식
   const [selectedSort, setSelectedSort] = useState('latest');
@@ -43,41 +50,27 @@ const CollectionPage = () => {
   // 한 페이지에 보여줄 상품 개수
   const itemsPerPage = 12;
 
-  // 카테고리별 상품 가져오기
-  const fetchProducts = async (category = '') => {
-    try {
-      setIsLoading(true);
-
-      // 백엔드 상품 목록 API 요청
-      const data = await getProducts({
-        category,
-      });
-
-      // 상품 목록 저장
-      setProducts(data);
-
-      // 카테고리 변경 시 첫 페이지로 이동
-      setCurrentPage(1);
-    } catch (error) {
-      console.error(error);
-      alert('상품 목록을 불러오지 못했습니다.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // 첫 진입 시 전체 상품 조회
   useEffect(() => {
     let isMounted = true;
 
+    // 현재 URL에서 category 쿼리값 가져오기
+    const category = searchParams.get('category') ?? '';
+
     // 상품 목록 API 요청
-    getProducts()
+    getProducts({ category })
       .then((data) => {
         // 컴포넌트가 사라진 뒤에는 state 변경 막기
         if (!isMounted) return;
 
         // 상품 목록 저장
         setProducts(data);
+
+        // URL category 값과 선택된 카테고리 상태 동기화
+        setSelectedCategory(category);
+
+        // 카테고리가 바뀌면 첫 페이지로 이동
+        setCurrentPage(1);
       })
       .catch((error) => {
         if (!isMounted) return;
@@ -96,7 +89,7 @@ const CollectionPage = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [searchParams]);
 
   // 정렬된 상품 목록
   const sortedProducts = useMemo(() => {
@@ -126,8 +119,20 @@ const CollectionPage = () => {
 
   // 카테고리 변경
   const handleChangeCategory = (category: string) => {
+    // 선택된 카테고리 상태 변경
     setSelectedCategory(category);
-    fetchProducts(category);
+
+    // 카테고리 변경 시 첫 페이지로 이동
+    setCurrentPage(1);
+
+    // 카테고리가 있으면 URL에 category 추가
+    if (category) {
+      setSearchParams({ category });
+      return;
+    }
+
+    // 전체 카테고리 선택 시 URL 쿼리 제거
+    setSearchParams({});
   };
 
   return (
