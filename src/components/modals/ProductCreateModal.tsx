@@ -1,47 +1,50 @@
+import { createProduct, uploadProductImage } from '@/api/productApi';
 import { X, ImagePlus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-interface ProductCreateModalProps {
+type ProductCreateModalProps = {
   isOpen: boolean;
   onClose: () => void;
-}
+  onSuccess?: () => void;
+};
 
-const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
-  // 실제 서버로 전송할 이미지 파일
-  const [imageFile, setImageFile] = useState<File | null>(null);
+const productFormData = {
+  name: '',
+  category: '',
+  price: '',
+  discountRate: '',
+  finalPrice: '',
+  stock: '',
+  status: 'selling',
+  summary: '',
+  description: '',
+};
 
-  // 화면에 보여줄 이미지 미리보기 URL
-  const [previewUrl, setPreviewUrl] = useState('');
+const ProductCreateModal = ({ isOpen, onClose, onSuccess }: ProductCreateModalProps) => {
+  // 서버에서 받은 최종 이미지 URL
+  const [thumbnailUrl, setThumbnailUrl] = useState('');
+
+  // 이미지 업로드 중인지 확인
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // 사용자가 이미지 영역에 파일을 드래그 중인지 확인
   const [isDragging, setIsDragging] = useState(false);
 
   // 상품 등록 폼 데이터
-  const [formData, setFormData] = useState({
-    // 상품명
-    name: '',
+  const [formData, setFormData] = useState(productFormData);
 
-    // 카테고리
-    category: '',
+  //초기화
+  const resetForm = () => {
+    setFormData(productFormData);
+    setThumbnailUrl('');
+    setIsDragging(false);
+    setIsUploadingImage(false);
+  };
 
-    // 상품 원가
-    price: '',
-
-    // 할인율
-    discountRate: '',
-
-    // 최종 판매 가격
-    finalPrice: '',
-
-    // 재고 수량
-    stock: '',
-
-    // 상품 상태
-    status: 'selling',
-
-    // 상품 설명
-    description: '',
-  });
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   // 모든 input/select/textarea 공통 변경 함수
   const handleChange = (
@@ -54,23 +57,72 @@ const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
       [name]: value,
     }));
   };
-  // 이미지 파일 검증 + 미리보기 생성
-  const handleImageFile = (file: File) => {
-    // 이미지 파일이 아니면 처리하지 않음
-    if (!file.type.startsWith('image/')) return;
 
-    // 나중에 서버로 보낼 원본 파일 저장
-    setImageFile(file);
+  // 이미지 파일 검증 + 서버 업로드 후 이미지 URL 저장
+  const handleImageFile = async (file: File | null) => {
+    // 파일이 없으면 종료
+    if (!file) return;
 
-    // 브라우저에서만 쓰는 임시 미리보기 URL 생성
-    setPreviewUrl(URL.createObjectURL(file));
+    // 이미지 파일이 아니면 업로드 막기
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드할 수 있습니다.');
+      return;
+    }
+
+    try {
+      // 이미지 업로드 상태 시작
+      setIsUploadingImage(true);
+
+      // 서버에 이미지 업로드 후 최종 이미지 URL 받기
+      const imageUrl = await uploadProductImage(file);
+      console.log('imageUrl', imageUrl);
+
+      // 서버에서 받은 최종 이미지 URL 저장
+      setThumbnailUrl(imageUrl);
+    } catch (error) {
+      console.error(error);
+      alert('이미지 업로드 중 오류가 발생했습니다.');
+    } finally {
+      // 이미지 업로드 상태 종료
+      setIsUploadingImage(false);
+    }
   };
 
-  useEffect(() => {
-    console.log(imageFile);
-  }, [imageFile]);
+  // 상품 등록 요청
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
+    if (!thumbnailUrl) {
+      alert('상품 이미지를 업로드해주세요.');
+      return;
+    }
+
+    const productData = {
+      ...formData,
+      price: Number(formData.price),
+      discountRate: Number(formData.discountRate || 0),
+      finalPrice: formData.finalPrice ? Number(formData.finalPrice) : null,
+      stock: Number(formData.stock),
+      thumbnailUrl,
+    };
+
+    try {
+      await createProduct(productData);
+
+      alert('상품이 등록되었습니다.');
+      // 부모 상품 목록 새로고침
+      onSuccess?.();
+
+      resetForm();
+      onClose();
+    } catch (error) {
+      console.error(error);
+
+      alert('상품 등록에 실패했습니다.');
+    }
+  };
   if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/45 px-4 py-6 sm:py-10 lg:flex lg:items-center lg:justify-center">
       <div className="mx-auto w-full max-w-3xl rounded-2xl bg-white p-4 shadow-2xl sm:p-6 lg:mx-0">
@@ -82,35 +134,27 @@ const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
           >
             <X size={22} />
           </button>
         </div>
 
-        <form className="grid gap-5">
+        <form onSubmit={handleSubmit} className="grid gap-5">
           <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
             <label
-              // 드래그 중 브라우저 기본 동작 방지
-              // 기본 동작을 막지 않으면 이미지가 브라우저에서 바로 열릴 수 있음
               onDragOver={(e) => {
                 e.preventDefault();
                 setIsDragging(true);
               }}
-              // 드래그가 업로드 영역 밖으로 나가면 스타일 원복
               onDragLeave={() => setIsDragging(false)}
-              // 파일을 업로드 영역에 놓았을 때 실행
               onDrop={(e) => {
                 e.preventDefault();
                 setIsDragging(false);
 
-                // 드롭된 파일 중 첫 번째 파일만 사용
-                const file = e.dataTransfer.files?.[0];
-
-                if (file) {
-                  handleImageFile(file);
-                }
+                const file = e.dataTransfer.files?.[0] ?? null;
+                handleImageFile(file);
               }}
               className={`flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-4 text-center transition sm:min-h-56 lg:min-h-64 ${
                 isDragging
@@ -118,38 +162,38 @@ const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
                   : 'border-slate-300 bg-slate-50 hover:border-violet-400 hover:bg-violet-50/40'
               }`}
             >
-              {previewUrl ? (
+              {thumbnailUrl ? (
                 <img
-                  src={previewUrl}
-                  alt="상품 이미지 미리보기"
+                  src={thumbnailUrl}
+                  alt="상품 이미지"
                   className="h-full max-h-64 w-full rounded-xl object-cover"
                 />
               ) : (
                 <>
                   <ImagePlus size={42} className="text-slate-400" />
                   <p className="mt-4 text-sm font-semibold text-slate-700">
-                    이미지를 클릭하거나 드래그하여 업로드
+                    {isUploadingImage
+                      ? '이미지 업로드 중...'
+                      : '이미지를 클릭하거나 드래그하여 업로드'}
                   </p>
                   <p className="mt-2 text-xs text-slate-400">PNG, JPG, WEBP 파일</p>
                 </>
               )}
+
               <input
                 type="file"
                 accept="image/*"
                 className="hidden"
-                // 클릭해서 파일을 선택했을 때 실행
                 onChange={(e) => {
-                  const file = e.target.files?.[0];
-
-                  if (file) {
-                    handleImageFile(file);
-                  }
+                  const file = e.target.files?.[0] ?? null;
+                  handleImageFile(file);
                 }}
               />
             </label>
 
             <div className="grid gap-4">
               <Input
+                name="name"
                 label="상품명"
                 value={formData.name}
                 onChange={handleChange}
@@ -173,6 +217,7 @@ const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input
+                  name="price"
                   value={formData.price}
                   onChange={handleChange}
                   label="가격"
@@ -181,7 +226,9 @@ const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
                   placeholder="0"
                   unit="원"
                 />
+
                 <Input
+                  name="discountRate"
                   value={formData.discountRate}
                   onChange={handleChange}
                   label="할인율"
@@ -193,6 +240,7 @@ const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input
+                  name="finalPrice"
                   value={formData.finalPrice}
                   onChange={handleChange}
                   label="최종 가격"
@@ -200,7 +248,17 @@ const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
                   placeholder="0"
                   unit="원"
                 />
-                <Input label="재고" required type="number" placeholder="0" unit="개" />
+
+                <Input
+                  name="stock"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  label="재고"
+                  required
+                  type="number"
+                  placeholder="0"
+                  unit="개"
+                />
               </div>
 
               <Select
@@ -217,9 +275,19 @@ const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
             </div>
           </div>
 
+          <Input
+            name="summary"
+            label="상품 요약"
+            value={formData.summary}
+            onChange={handleChange}
+            required
+            placeholder="상품 요약을 입력하세요"
+          />
+
           <div>
             <label className="mb-2 block text-sm font-semibold text-slate-800">상품 설명</label>
             <textarea
+              name="description"
               maxLength={1000}
               value={formData.description}
               onChange={handleChange}
@@ -231,7 +299,7 @@ const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
           <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="h-11 rounded-xl border border-slate-200 px-6 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               취소
@@ -239,7 +307,8 @@ const ProductCreateModal = ({ isOpen, onClose }: ProductCreateModalProps) => {
 
             <button
               type="submit"
-              className="h-11 rounded-xl bg-violet-600 px-6 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700"
+              disabled={isUploadingImage}
+              className="h-11 rounded-xl bg-violet-600 px-6 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               등록하기
             </button>

@@ -1,95 +1,133 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react';
 import ProductCreateModal from '@/components/modals/ProductCreateModal';
-
-const products = [
-  {
-    id: 1001,
-    name: '루비 목걸이',
-    slug: 'ruby-necklace',
-    category: 'necklace',
-    price: 129000,
-    salePrice: 116100,
-    discountRate: 10,
-    stock: 120,
-    status: '판매 중',
-    visible: true,
-    imageUrl: '/images/product-sample-1.jpg',
-    createdAt: '2025-05-24 14:30',
-  },
-  {
-    id: 1002,
-    name: '사파이어 반지',
-    slug: 'sapphire-ring',
-    category: 'ring',
-    price: 89000,
-    salePrice: 89000,
-    discountRate: 0,
-    stock: 85,
-    status: '판매 중',
-    visible: true,
-    imageUrl: '/images/product-sample-2.jpg',
-    createdAt: '2025-05-24 13:15',
-  },
-  {
-    id: 1003,
-    name: '진주 귀걸이',
-    slug: 'pearl-earring',
-    category: 'earring',
-    price: 49000,
-    salePrice: 46550,
-    discountRate: 5,
-    stock: 0,
-    status: '품절',
-    visible: true,
-    imageUrl: '/images/product-sample-3.jpg',
-    createdAt: '2025-05-23 11:20',
-  },
-];
+import { getProducts } from '@/api/productApi';
+import type { Product } from '@/constants/type';
+import { formatKoreanDateTime } from '@/constants/utils';
 
 const formatPrice = (price: number) => `${price.toLocaleString()}원`;
 
 const AdminProducts = () => {
+  // 서버에서 가져온 상품 목록
+  const [products, setProducts] = useState<Product[]>([]);
+
+  // 상품 목록 로딩 상태
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 상품 목록 조회 에러 메시지
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // 선택된 상품 id 목록
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  //현재 페이지
+
+  // 현재 페이지
   const [currentPage, setCurrentPage] = useState(1);
-  //아이템 나타낼 개수
+
+  // 한 페이지에 보여줄 상품 개수
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  //모달 state
+
+  // 상품 등록 모달 열림 여부
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  // 전체 페이지 수
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
+  // 현재 페이지에 보여줄 상품 목록
   const paginatedProducts = products.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
 
+  // 현재 페이지 상품 id 목록
   const currentPageIds = paginatedProducts.map((product) => product.id);
 
+  // 현재 페이지 상품이 모두 선택되었는지 확인
   const isAllSelected =
     currentPageIds.length > 0 && currentPageIds.every((id) => selectedIds.includes(id));
 
+  // 선택된 상품 개수
   const selectedCount = selectedIds.length;
 
+  // 선택 상태 문구
   const selectedText = useMemo(() => {
     return selectedCount > 0 ? `${selectedCount}개 선택됨` : '선택 없음';
   }, [selectedCount]);
 
+  // 현재 페이지 상품 전체 선택/해제
   const handleSelectAll = () => {
+    // 현재 페이지 상품이 모두 선택되어 있으면 현재 페이지 상품만 선택 해제
     if (isAllSelected) {
       setSelectedIds((prev) => prev.filter((id) => !currentPageIds.includes(id)));
       return;
     }
 
+    // 현재 페이지 상품을 기존 선택 목록에 추가
     setSelectedIds((prev) => [...new Set([...prev, ...currentPageIds])]);
   };
 
+  // 개별 상품 선택/해제
   const handleSelect = (id: number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((selectedId) => selectedId !== id) : [...prev, id],
     );
   };
+
+  // 상품 목록 새로고침
+  const refreshProducts = async () => {
+    try {
+      // 새로고침 로딩 시작
+      setIsLoading(true);
+      setErrorMessage('');
+
+      // 서버에서 최신 상품 목록 가져오기
+      const data = await getProducts();
+
+      // 상품 목록 상태 업데이트
+      setProducts(data);
+
+      // 선택 상태 초기화
+      setSelectedIds([]);
+
+      // 첫 페이지로 이동
+      setCurrentPage(1);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('상품 목록을 불러오지 못했습니다.');
+    } finally {
+      // 새로고침 로딩 종료
+      setIsLoading(false);
+    }
+  };
+
+  // 첫 진입 시 상품 목록 조회
+  useEffect(() => {
+    let isMounted = true;
+
+    // 상품 목록 API 요청
+    getProducts()
+      .then((data) => {
+        // 컴포넌트가 사라진 뒤에는 state 변경 막기
+        if (!isMounted) return;
+
+        setProducts(data);
+      })
+      .catch((error) => {
+        if (!isMounted) return;
+
+        console.error(error);
+        setErrorMessage('상품 목록을 불러오지 못했습니다.');
+      })
+      .finally(() => {
+        if (!isMounted) return;
+
+        setIsLoading(false);
+      });
+
+    // 언마운트 시 비동기 응답 무시
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <section>
@@ -168,7 +206,7 @@ const AdminProducts = () => {
         )}
 
         <div className="hidden overflow-x-auto lg:block">
-          <table className="w-full min-w-[1050px] text-left text-sm">
+          <table className="w-full min-w-262.5 text-left text-sm">
             <thead className="bg-slate-50 text-slate-600">
               <tr>
                 <th className="w-12 px-4 py-3">
@@ -208,7 +246,7 @@ const AdminProducts = () => {
                     <div className="flex items-center gap-3">
                       <div className="h-11 w-11 overflow-hidden rounded-lg bg-slate-100">
                         <img
-                          src={product.imageUrl}
+                          src={product.thumbnailUrl}
                           alt={product.name}
                           className="h-full w-full object-cover"
                         />
@@ -224,7 +262,7 @@ const AdminProducts = () => {
                   <td className="px-4 py-3">{product.category}</td>
                   <td className="px-4 py-3">{formatPrice(product.price)}</td>
                   <td className="px-4 py-3 text-red-500">{product.discountRate}%</td>
-                  <td className="px-4 py-3 font-semibold">{formatPrice(product.salePrice)}</td>
+                  <td className="px-4 py-3 font-semibold">{formatPrice(product.finalPrice)}</td>
                   <td className="px-4 py-3">{product.stock}개</td>
 
                   <td className="px-4 py-3">
@@ -237,14 +275,16 @@ const AdminProducts = () => {
                     </span>
                   </td>
 
-                  <td className="px-4 py-3 text-slate-500">{product.createdAt}</td>
+                  <td className="px-4 py-3 text-slate-500">
+                    {formatKoreanDateTime(product.createdAt)}
+                  </td>
 
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-2">
-                      <button className="rounded-lg border border-violet-200 px-3 py-2 text-xs font-semibold text-violet-600">
+                      <button className="rounded-lg border border-violet-200 px-3 py-2 text-xs font-semibold text-violet-600 hover:bg-violet-600 hover:text-white cursor-pointer">
                         수정
                       </button>
-                      <button className="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-500">
+                      <button className="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
                         삭제
                       </button>
                     </div>
@@ -269,7 +309,7 @@ const AdminProducts = () => {
 
                   <div className="h-20 w-20 overflow-hidden rounded-xl bg-slate-100">
                     <img
-                      src={product.imageUrl}
+                      src={product.thumbnailUrl}
                       alt={product.name}
                       className="h-full w-full object-cover"
                     />
@@ -289,7 +329,7 @@ const AdminProducts = () => {
                 <Info label="카테고리" value={product.category} />
                 <Info label="재고" value={`${product.stock}개`} />
                 <Info label="가격" value={formatPrice(product.price)} />
-                <Info label="최종 가격" value={formatPrice(product.salePrice)} />
+                <Info label="최종 가격" value={formatPrice(product.finalPrice)} />
                 <Info label="할인율" value={`${product.discountRate}%`} />
                 <Info label="등록일" value={product.createdAt} />
               </div>
@@ -353,7 +393,11 @@ const AdminProducts = () => {
           </select>
         </div>
       </div>
-      <ProductCreateModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+      <ProductCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={refreshProducts}
+      />
     </section>
   );
 };
