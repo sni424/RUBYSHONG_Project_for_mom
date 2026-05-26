@@ -3,6 +3,7 @@ import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getProducts } from '@/api/productApi';
 import type { Product } from '@/constants/type';
 import collectionHero from '@/assets/images/collection/collection-hero.png';
+import ProductDetailModal from '@/components/modals/ProductDetailModal';
 
 const productCategories = [
   { label: '전체', value: '' },
@@ -35,6 +36,9 @@ const CollectionPage = () => {
 
   // 상품 목록 로딩 상태
   const [isLoading, setIsLoading] = useState(true);
+
+  // 상세로 볼 상품
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // 한 페이지에 보여줄 상품 개수
   const itemsPerPage = 12;
@@ -215,6 +219,7 @@ const CollectionPage = () => {
                     <img
                       src={product.thumbnailUrl}
                       alt={product.name}
+                      onClick={() => setSelectedProduct(product)}
                       className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                     />
 
@@ -278,6 +283,7 @@ const CollectionPage = () => {
           </>
         )}
       </section>
+      <ProductDetailModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
     </main>
   );
 };
