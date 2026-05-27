@@ -1,5 +1,9 @@
 // src/api/reservationApi.ts
-import type { AvailableTimesResponse, CreateReservationPayload } from '@/constants/type';
+import type {
+  AvailableTimesResponse,
+  CreateReservationPayload,
+  Reservation,
+} from '@/constants/type';
 import axios from 'axios';
 
 // 예약 가능한 시간 조회
@@ -32,5 +36,14 @@ export const createReservation = async (reservationData: CreateReservationPayloa
   );
 
   // 생성된 예약 데이터 반환
+  return response.data.data;
+};
+
+// 관리자 예약 목록 가져오기
+export const getAdminReservations = async (): Promise<Reservation[]> => {
+  // 관리자 예약 목록 API 요청
+  const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/reservations/admin`);
+
+  // 서버에서 받은 예약 배열 반환
   return response.data.data;
 };

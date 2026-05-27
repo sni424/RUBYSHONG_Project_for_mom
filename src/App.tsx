@@ -11,6 +11,7 @@ import MainLayout from '@/components/layout/main/MainLayout';
 import AdminLayout from '@/components/layout/admin/AdminLayout';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
+import AdminReservations from './pages/admin/AdminReservations';
 
 const App = () => {
   return (
@@ -33,7 +34,7 @@ const App = () => {
             <Route element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts />} />
-              {/* <Route path="orders" element={<AdminOrders />} /> */}
+              <Route path="reservation" element={<AdminReservations />} />
             </Route>
           </Route>
         </Route>
