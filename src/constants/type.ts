@@ -97,3 +97,17 @@ export type CreateReservationPayload = {
   message?: string;
   privacyAgreed: boolean;
 };
+
+//어드민 예약 타입
+export type Reservation = {
+  id: number;
+  name: string;
+  phone: string;
+  visitDate: string;
+  visitTime: string;
+  message?: string | null;
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  privacyAgreed: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
