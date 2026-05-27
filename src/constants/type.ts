@@ -80,3 +80,20 @@ export type UpdateProductPayload = CreateProductPayload & {
   isBest: boolean;
   isVisible: boolean;
 };
+
+// 예약 가능 시간 응답 타입
+export type AvailableTimesResponse = {
+  date: string;
+  availableTimes: string[];
+  reservedTimes: string[];
+};
+
+// 예약 생성 요청 타입
+export type CreateReservationPayload = {
+  name: string;
+  phone: string;
+  visitDate: string;
+  visitTime: string;
+  message?: string;
+  privacyAgreed: boolean;
+};
