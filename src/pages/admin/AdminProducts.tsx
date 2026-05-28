@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react';
 import ProductCreateModal from '@/components/modals/ProductCreateModal';
-import { getProducts, type ProductSearchParams } from '@/api/productApi';
+import { deleteProduct, getProducts, type ProductSearchParams } from '@/api/productApi';
 import type { Product } from '@/constants/type';
 import { formatKoreanDateTime } from '@/constants/utils';
 import ProductEditModal from '@/components/modals/ProductEditModal';
@@ -198,6 +198,64 @@ const AdminProducts = () => {
     );
   };
 
+  // 단일 상품 삭제
+  const handleDeleteProduct = async (product: Product) => {
+    // 삭제 전 사용자 확인
+    const isConfirmed = window.confirm(
+      `"${product.name}" 상품을 정말 삭제하시겠습니까?\n삭제된 상품은 복구할 수 없습니다.`,
+    );
+
+    if (!isConfirmed) return;
+
+    try {
+      // 백엔드 상품 삭제 API 요청
+      await deleteProduct(product.id);
+
+      alert('상품이 삭제되었습니다.');
+
+      // 선택 목록에서 삭제된 상품 제거
+      setSelectedIds((prev) => prev.filter((id) => id !== product.id));
+
+      // 상품 목록 새로고침
+      await refreshProducts();
+    } catch (error) {
+      console.error(error);
+      alert('상품 삭제에 실패했습니다.');
+    }
+  };
+
+  // 선택 상품 삭제
+  const handleDeleteSelectedProducts = async () => {
+    // 선택된 상품이 없으면 중단
+    if (selectedIds.length === 0) {
+      alert('삭제할 상품을 선택해주세요.');
+      return;
+    }
+
+    // 삭제 전 사용자 확인
+    const isConfirmed = window.confirm(
+      `선택한 ${selectedIds.length}개 상품을 정말 삭제하시겠습니까?\n삭제된 상품은 복구할 수 없습니다.`,
+    );
+
+    if (!isConfirmed) return;
+
+    try {
+      // 선택된 상품을 모두 삭제
+      await Promise.all(selectedIds.map((productId) => deleteProduct(productId)));
+
+      alert('선택한 상품이 삭제되었습니다.');
+
+      // 선택 상태 초기화
+      setSelectedIds([]);
+
+      // 상품 목록 새로고침
+      await refreshProducts();
+    } catch (error) {
+      console.error(error);
+      alert('선택 상품 삭제에 실패했습니다.');
+    }
+  };
+
   return (
     <section>
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -299,7 +357,10 @@ const AdminProducts = () => {
             <span className="text-sm font-semibold text-slate-700">{selectedText}</span>
 
             <div className="flex flex-wrap gap-2">
-              <button className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-500">
+              <button
+                onClick={handleDeleteSelectedProducts}
+                className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-500"
+              >
                 선택 삭제
               </button>
               <button className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">
@@ -401,7 +462,10 @@ const AdminProducts = () => {
                       >
                         수정
                       </button>
-                      <button className="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
+                      <button
+                        onClick={() => handleDeleteProduct(product)}
+                        className="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-500 hover:text-white cursor-pointer"
+                      >
                         삭제
                       </button>
                     </div>
@@ -459,7 +523,10 @@ const AdminProducts = () => {
                 >
                   수정
                 </button>
-                <button className="flex-1 rounded-xl border border-red-200 py-2 text-sm font-semibold text-red-500">
+                <button
+                  onClick={() => handleDeleteProduct(product)}
+                  className="flex-1 rounded-xl border border-red-200 py-2 text-sm font-semibold text-red-500"
+                >
                   삭제
                 </button>
               </div>
