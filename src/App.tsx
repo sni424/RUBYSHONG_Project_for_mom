@@ -4,6 +4,8 @@ import Stores from '@/pages/Stores';
 import About from '@/pages/About';
 import CollectionPage from '@/pages/Collection';
 import Reservation from '@/pages/Reservation';
+import Contact from '@/pages/Contact';
+
 import AdminLogin from '@/pages/admin/AdminLogin';
 import PublicOnlyRoute from '@/routes/PublicOnlyRoute';
 import ProtectedRoute from '@/routes/ProtectedRoute';
@@ -23,6 +25,7 @@ const App = () => {
           <Route path="/stores" element={<Stores />} />
           <Route path="/about" element={<About />} />
           <Route path="/reservation" element={<Reservation />} />
+          <Route path="/contact" element={<Contact />} />
         </Route>
 
         <Route path="/admin">
