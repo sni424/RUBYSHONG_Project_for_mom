@@ -1,4 +1,4 @@
-import storyImage from '@/assets/images/home/story.png';
+import storyImage from '@/assets/images/home/story.webp';
 import { Link } from 'react-router';
 
 const BrandStorySection = () => {
