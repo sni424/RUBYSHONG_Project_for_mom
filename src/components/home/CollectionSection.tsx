@@ -1,7 +1,7 @@
-import ringImage from '@/assets/images/home/ring.png';
-import necklaceImage from '@/assets/images/home/necklace.png';
-import earringImage from '@/assets/images/home/earring.png';
-import braceletImage from '@/assets/images/home/bracelet.png';
+import ringImage from '@/assets/images/home/ring.webp';
+import necklaceImage from '@/assets/images/home/necklace.webp';
+import earringImage from '@/assets/images/home/earring.webp';
+import braceletImage from '@/assets/images/home/bracelet.webp';
 import { Link } from 'react-router';
 
 const collections = [

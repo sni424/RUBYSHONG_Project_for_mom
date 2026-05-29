@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getProducts } from '@/api/productApi';
 import type { Product } from '@/constants/type';
-import collectionHero from '@/assets/images/collection/collection-hero.png';
+import collectionHero from '@/assets/images/collection/collection-hero.webp';
 import ProductDetailModal from '@/components/modals/ProductDetailModal';
 import { useSearchParams } from 'react-router';
 

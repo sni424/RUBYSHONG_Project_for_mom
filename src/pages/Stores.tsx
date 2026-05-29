@@ -1,8 +1,8 @@
 import { Calendar, Clock, Gem, MapPin, Phone, Store, UserRound, Gift } from 'lucide-react';
 
-import StoresHero from '@/assets/images/stores/stores-hero.png';
-import StoresInside from '@/assets/images/stores/store-inside.png';
-import StoresRing from '@/assets/images/stores/store-ring.png';
+import StoresHero from '@/assets/images/stores/stores-hero.webp';
+import StoresInside from '@/assets/images/stores/store-inside.webp';
+import StoresRing from '@/assets/images/stores/store-ring.webp';
 import StoreMap from '@/components/common/StoreMap';
 
 const storeInfo = [

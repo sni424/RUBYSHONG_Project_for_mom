@@ -1,6 +1,6 @@
 import { Clock, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
 import { useState } from 'react';
-import contactHero from '@/assets/images/contact/contact-hero.png';
+import contactHero from '@/assets/images/contact/contact-hero.webp';
 
 const STORE_PHONE_NUMBER = '01033938107';
 const KAKAO_CHANNEL_URL = 'http://pf.kakao.com/_qHBbX/chat';

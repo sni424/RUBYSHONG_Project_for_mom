@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 
-import reservationHero from '@/assets/images/home/hero.png';
+import reservationHero from '@/assets/images/home/hero.webp';
 import type { AvailableTimesResponse } from '@/constants/type';
 import { createReservation, getAvailableTimes } from '@/api/ReservationApi';
 

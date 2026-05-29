@@ -1,5 +1,5 @@
-import aboutHero from '@/assets/images/about/about-hero.png';
-import aboutStore from '@/assets/images/about/about-store.png';
+import aboutHero from '@/assets/images/about/about-hero.webp';
+import aboutStore from '@/assets/images/about/about-store.webp';
 
 const VALUES = [
   {

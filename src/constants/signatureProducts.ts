@@ -1,8 +1,8 @@
-import ringImage from '@/assets/images/signatureProducts/ring1.png';
-import necklaceImage from '@/assets/images/signatureProducts/necklace.png';
-import earringImage from '@/assets/images/signatureProducts/earring.png';
-import eternityRingImage from '@/assets/images/signatureProducts/ring2.png';
-import specialRingImage from '@/assets/images/signatureProducts/ring3.png';
+import ringImage from '@/assets/images/signatureProducts/ring1.webp';
+import necklaceImage from '@/assets/images/signatureProducts/necklace.webp';
+import earringImage from '@/assets/images/signatureProducts/earring.webp';
+import eternityRingImage from '@/assets/images/signatureProducts/ring2.webp';
+import specialRingImage from '@/assets/images/signatureProducts/ring3.webp';
 
 export const signatureProducts = [
   {
