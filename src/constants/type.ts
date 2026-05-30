@@ -111,3 +111,26 @@ export type Reservation = {
   createdAt: string;
   updatedAt: string;
 };
+
+// 문의 상태 타입
+export type ContactInquiryStatus = 'pending' | 'answered' | 'closed';
+
+// 문의 타입
+export type ContactInquiry = {
+  id: number;
+  name: string;
+  phone: string;
+  title: string;
+  message: string;
+  status: ContactInquiryStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// 문의 등록 요청 타입
+export type CreateContactPayload = {
+  name: string;
+  phone: string;
+  title: string;
+  message: string;
+};

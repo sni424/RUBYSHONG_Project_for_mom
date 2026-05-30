@@ -1,6 +1,7 @@
 import { Clock, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
 import { useState } from 'react';
 import contactHero from '@/assets/images/contact/contact-hero.webp';
+import { createContactInquiry } from '@/api/ContactApi';
 
 const STORE_PHONE_NUMBER = '01033938107';
 const KAKAO_CHANNEL_URL = 'http://pf.kakao.com/_qHBbX/chat';
@@ -18,6 +19,9 @@ const Contact = () => {
     title: '',
     message: '',
   });
+
+  // 문의 제출 중인지 확인
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 입력값 변경
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -48,25 +52,43 @@ const Contact = () => {
   };
 
   // 문의 제출
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    // 중복 제출 방지
+    if (isSubmitting) return;
     // 필수값 검증
     if (!formData.name || !formData.phone || !formData.title || !formData.message) {
       alert('문의 정보를 모두 입력해주세요.');
       return;
     }
 
-    // TODO: 문의 저장 API 연결 예정
-    alert('문의가 접수되었습니다.');
+    try {
+      // 문의 제출 시작
+      setIsSubmitting(true);
+      // 문의 등록 API 요청
+      await createContactInquiry({
+        name: formData.name,
+        phone: formData.phone,
+        title: formData.title,
+        message: formData.message,
+      });
 
-    // 문의 폼 초기화
-    setFormData({
-      name: '',
-      phone: '',
-      title: '',
-      message: '',
-    });
+      alert('문의가 접수되었습니다.');
+
+      // 문의 폼 초기화
+      setFormData({
+        name: '',
+        phone: '',
+        title: '',
+        message: '',
+      });
+    } catch (error) {
+      console.error(error);
+      alert('문의 접수에 실패했습니다.');
+    } finally {
+      // 문의 제출 종료
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -193,10 +215,11 @@ const Contact = () => {
 
             <button
               type="submit"
-              className="mt-5 flex h-13 w-full items-center justify-center gap-2 bg-[#9b7650] text-sm font-semibold text-white transition hover:bg-[#876542]"
+              disabled={isSubmitting}
+              className="mt-5 flex h-13 w-full items-center justify-center gap-2 bg-[#9b7650] text-sm font-semibold text-white transition hover:bg-[#876542] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
             >
               <Send size={17} />
-              문의 남기기
+              {isSubmitting ? '문의 접수 중...' : '문의 남기기'}
             </button>
           </form>
         </div>
