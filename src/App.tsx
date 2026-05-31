@@ -13,7 +13,8 @@ import MainLayout from '@/components/layout/main/MainLayout';
 import AdminLayout from '@/components/layout/admin/AdminLayout';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
-import AdminReservations from './pages/admin/AdminReservations';
+import AdminReservations from '@/pages/admin/AdminReservations';
+import AdminContact from '@/pages/admin/AdminContact';
 
 const App = () => {
   return (
@@ -38,6 +39,7 @@ const App = () => {
               <Route index element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts />} />
               <Route path="reservation" element={<AdminReservations />} />
+              <Route path="contact" element={<AdminContact />} />
             </Route>
           </Route>
         </Route>

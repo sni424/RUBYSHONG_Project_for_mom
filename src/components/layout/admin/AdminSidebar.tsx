@@ -23,7 +23,7 @@ const navItems = [
   { label: '주문 관리', path: '/admin/orders', icon: ShoppingCart },
   { label: '고객 관리', path: '/admin/customers', icon: Users },
   { label: '예약 관리', path: '/admin/reservation', icon: CalendarDays },
-  { label: '문의 관리', path: '/admin/inquiries', icon: MessageCircle },
+  { label: '문의 관리', path: '/admin/contact', icon: MessageCircle },
   { label: '통계', path: '/admin/analytics', icon: BarChart3 },
   { label: '설정', path: '/admin/settings', icon: Settings },
 ];
