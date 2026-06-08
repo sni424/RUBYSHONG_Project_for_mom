@@ -5,6 +5,7 @@ import { deleteProduct, getProducts, type ProductSearchParams } from '@/api/prod
 import type { Product } from '@/constants/type';
 import { formatKoreanDateTime } from '@/constants/utils';
 import ProductEditModal from '@/components/modals/ProductEditModal';
+import axios from 'axios';
 
 const formatPrice = (price: number) => `${price.toLocaleString()}원`;
 
@@ -220,6 +221,17 @@ const AdminProducts = () => {
       await refreshProducts();
     } catch (error) {
       console.error(error);
+
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        alert('상품 삭제 권한이 없습니다.');
+        return;
+      }
+
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+        return;
+      }
+
       alert('상품 삭제에 실패했습니다.');
     }
   };
@@ -252,7 +264,18 @@ const AdminProducts = () => {
       await refreshProducts();
     } catch (error) {
       console.error(error);
-      alert('선택 상품 삭제에 실패했습니다.');
+
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        alert('상품 삭제 권한이 없습니다.');
+        return;
+      }
+
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+        return;
+      }
+
+      alert('상품 삭제에 실패했습니다.');
     }
   };
 

@@ -101,8 +101,15 @@ export const updateProduct = async (productId: number, productData: UpdateProduc
 
 // 상품 삭제
 export const deleteProduct = async (productId: number) => {
+  // 관리자 토큰 가져오기
+  const token = localStorage.getItem('adminToken');
+
   // 백엔드 상품 삭제 API 요청
-  const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/products/${productId}`);
+  const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/products/${productId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   // 삭제 결과 반환
   return response.data;
