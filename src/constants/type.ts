@@ -134,3 +134,18 @@ export type CreateContactPayload = {
   title: string;
   message: string;
 };
+
+//제품 삭제 로그
+export type ProductDeleteLog = {
+  id: number;
+  productId: number;
+  productName: string;
+  productSlug: string;
+  deletedData: Record<string, unknown>;
+  createdAt: string;
+  deletedBy: {
+    id: number;
+    email: string;
+    role: string;
+  };
+};

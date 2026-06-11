@@ -1,4 +1,9 @@
-import type { CreateProductPayload, Product, UpdateProductPayload } from '@/constants/type';
+import type {
+  CreateProductPayload,
+  Product,
+  ProductDeleteLog,
+  UpdateProductPayload,
+} from '@/constants/type';
 import axios from 'axios';
 
 export type ProductSearchParams = {
@@ -113,4 +118,23 @@ export const deleteProduct = async (productId: number) => {
 
   // 삭제 결과 반환
   return response.data;
+};
+
+// 상품 삭제 이력 가져오기
+export const getProductDeleteLogs = async (): Promise<ProductDeleteLog[]> => {
+  // 관리자 토큰 가져오기
+  const token = localStorage.getItem('adminToken');
+
+  // 백엔드 상품 삭제 이력 API 요청
+  const response = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/products/admin/delete-logs`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  // 서버에서 받은 삭제 이력 배열 반환
+  return response.data.data;
 };
