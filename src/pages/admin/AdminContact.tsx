@@ -7,6 +7,7 @@ import {
   getAdminContactInquiries,
   updateContactInquiryStatus,
 } from '@/api/ContactApi';
+import AdminContactDeleteLogs from '@/components/admin/AdminContactDeleteLogs';
 
 const statusLabel: Record<ContactInquiryStatus, string> = {
   pending: '대기',
@@ -21,6 +22,8 @@ const statusStyle: Record<ContactInquiryStatus, string> = {
 };
 
 const AdminContact = () => {
+  // 현재 보고 있는 탭
+  const [activeTab, setActiveTab] = useState<'inquiries' | 'deleteLogs'>('inquiries');
   // 문의 목록
   const [inquiries, setInquiries] = useState<ContactInquiry[]>([]);
 
@@ -150,181 +153,208 @@ const AdminContact = () => {
           새로고침
         </button>
       </div>
+      <div className="mb-5 border-b border-slate-200">
+        <div className="flex gap-6 overflow-x-auto text-sm font-semibold">
+          {[
+            { label: '문의 목록', value: 'inquiries' },
+            { label: '삭제 이력', value: 'deleteLogs' },
+          ].map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => setActiveTab(tab.value as 'inquiries' | 'deleteLogs')}
+              className={`whitespace-nowrap border-b-2 px-1 pb-4 ${
+                activeTab === tab.value
+                  ? 'border-violet-600 text-violet-600'
+                  : 'border-transparent text-slate-500'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        {errorMessage && (
-          <div className="border-b border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
-            {errorMessage}
-          </div>
-        )}
+        {activeTab === 'inquiries' && (
+          <>
+            {errorMessage && (
+              <div className="border-b border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+                {errorMessage}
+              </div>
+            )}
 
-        <div className="hidden overflow-x-auto lg:block">
-          <table className="w-full min-w-250 text-left text-sm">
-            <thead className="bg-slate-50 text-slate-600">
-              <tr>
-                <th className="px-4 py-3">고객 정보</th>
-                <th className="px-4 py-3">문의 제목</th>
-                <th className="px-4 py-3">문의 내용</th>
-                <th className="px-4 py-3">상태</th>
-                <th className="px-4 py-3">문의일</th>
-                <th className="px-4 py-3 text-right">관리</th>
-              </tr>
-            </thead>
+            <div className="hidden overflow-x-auto lg:block">
+              <table className="w-full min-w-250 text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">고객 정보</th>
+                    <th className="px-4 py-3">문의 제목</th>
+                    <th className="px-4 py-3">문의 내용</th>
+                    <th className="px-4 py-3">상태</th>
+                    <th className="px-4 py-3">문의일</th>
+                    <th className="px-4 py-3 text-right">관리</th>
+                  </tr>
+                </thead>
 
-            <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100">
+                  {inquiries.map((inquiry) => (
+                    <tr key={inquiry.id} className="hover:bg-slate-50/70">
+                      <td className="px-4 py-4">
+                        <p className="font-semibold text-slate-900">{inquiry.name}</p>
+                        <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                          <Phone size={13} />
+                          {inquiry.phone}
+                        </p>
+                      </td>
+
+                      <td className="max-w-56 px-4 py-4 font-semibold text-slate-800">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedInquiry(inquiry)}
+                          className="block max-w-56 truncate text-left transition hover:text-violet-600"
+                        >
+                          {inquiry.title}
+                        </button>
+                      </td>
+
+                      <td className="max-w-md px-4 py-4 text-slate-600">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedInquiry(inquiry)}
+                          className="block max-w-md truncate text-left transition hover:text-violet-600"
+                        >
+                          {inquiry.message}
+                        </button>
+                      </td>
+
+                      <td className="px-4 py-4">
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                            statusStyle[inquiry.status]
+                          }`}
+                        >
+                          {statusLabel[inquiry.status]}
+                        </span>
+                      </td>
+
+                      <td className="px-4 py-4 text-slate-500">
+                        {formatKoreanDateTime(inquiry.createdAt)}
+                      </td>
+
+                      <td className="px-4 py-4">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedInquiry(inquiry)}
+                            className="h-9 rounded-lg border border-violet-200 px-3 text-xs font-semibold text-violet-600 transition hover:bg-violet-600 hover:text-white"
+                          >
+                            상세보기
+                          </button>
+
+                          <select
+                            value={inquiry.status}
+                            onChange={(e) =>
+                              handleChangeStatus(inquiry.id, e.target.value as ContactInquiryStatus)
+                            }
+                            className="h-9 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-700"
+                          >
+                            <option value="pending">대기</option>
+                            <option value="answered">답변 완료</option>
+                            <option value="closed">종료</option>
+                          </select>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteInquiry(inquiry)}
+                            className="flex h-9 items-center gap-1 rounded-lg border border-red-200 px-3 text-xs font-semibold text-red-500 transition hover:bg-red-500 hover:text-white"
+                          >
+                            <Trash2 size={14} />
+                            삭제
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="divide-y divide-slate-100 lg:hidden">
               {inquiries.map((inquiry) => (
-                <tr key={inquiry.id} className="hover:bg-slate-50/70">
-                  <td className="px-4 py-4">
-                    <p className="font-semibold text-slate-900">{inquiry.name}</p>
-                    <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
-                      <Phone size={13} />
-                      {inquiry.phone}
-                    </p>
-                  </td>
+                <div key={inquiry.id} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-slate-900">{inquiry.name}</p>
+                      <p className="mt-1 text-sm text-slate-500">{inquiry.phone}</p>
+                    </div>
 
-                  <td className="max-w-56 px-4 py-4 font-semibold text-slate-800">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedInquiry(inquiry)}
-                      className="block max-w-56 truncate text-left transition hover:text-violet-600"
-                    >
-                      {inquiry.title}
-                    </button>
-                  </td>
-
-                  <td className="max-w-md px-4 py-4 text-slate-600">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedInquiry(inquiry)}
-                      className="block max-w-md truncate text-left transition hover:text-violet-600"
-                    >
-                      {inquiry.message}
-                    </button>
-                  </td>
-
-                  <td className="px-4 py-4">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
                         statusStyle[inquiry.status]
                       }`}
                     >
                       {statusLabel[inquiry.status]}
                     </span>
-                  </td>
+                  </div>
 
-                  <td className="px-4 py-4 text-slate-500">
-                    {formatKoreanDateTime(inquiry.createdAt)}
-                  </td>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedInquiry(inquiry)}
+                    className="mt-4 w-full rounded-xl bg-slate-50 p-3 text-left"
+                  >
+                    <p className="flex items-center gap-2 font-semibold text-slate-900">
+                      <MessageCircle size={16} />
+                      <span className="truncate">{inquiry.title}</span>
+                    </p>
+                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
+                      {inquiry.message}
+                    </p>
+                    <p className="mt-3 text-xs text-slate-400">
+                      {formatKoreanDateTime(inquiry.createdAt)}
+                    </p>
+                  </button>
 
-                  <td className="px-4 py-4">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedInquiry(inquiry)}
-                        className="h-9 rounded-lg border border-violet-200 px-3 text-xs font-semibold text-violet-600 transition hover:bg-violet-600 hover:text-white"
-                      >
-                        상세보기
-                      </button>
+                  <div className="mt-4 flex gap-2">
+                    <select
+                      value={inquiry.status}
+                      onChange={(e) =>
+                        handleChangeStatus(inquiry.id, e.target.value as ContactInquiryStatus)
+                      }
+                      className="h-10 flex-1 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-700"
+                    >
+                      <option value="pending">대기</option>
+                      <option value="answered">답변 완료</option>
+                      <option value="closed">종료</option>
+                    </select>
 
-                      <select
-                        value={inquiry.status}
-                        onChange={(e) =>
-                          handleChangeStatus(inquiry.id, e.target.value as ContactInquiryStatus)
-                        }
-                        className="h-9 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-700"
-                      >
-                        <option value="pending">대기</option>
-                        <option value="answered">답변 완료</option>
-                        <option value="closed">종료</option>
-                      </select>
-
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteInquiry(inquiry)}
-                        className="flex h-9 items-center gap-1 rounded-lg border border-red-200 px-3 text-xs font-semibold text-red-500 transition hover:bg-red-500 hover:text-white"
-                      >
-                        <Trash2 size={14} />
-                        삭제
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="divide-y divide-slate-100 lg:hidden">
-          {inquiries.map((inquiry) => (
-            <div key={inquiry.id} className="p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate font-semibold text-slate-900">{inquiry.name}</p>
-                  <p className="mt-1 text-sm text-slate-500">{inquiry.phone}</p>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteInquiry(inquiry)}
+                      className="h-10 rounded-xl border border-red-200 px-4 text-sm font-semibold text-red-500"
+                    >
+                      삭제
+                    </button>
+                  </div>
                 </div>
-
-                <span
-                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
-                    statusStyle[inquiry.status]
-                  }`}
-                >
-                  {statusLabel[inquiry.status]}
-                </span>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setSelectedInquiry(inquiry)}
-                className="mt-4 w-full rounded-xl bg-slate-50 p-3 text-left"
-              >
-                <p className="flex items-center gap-2 font-semibold text-slate-900">
-                  <MessageCircle size={16} />
-                  <span className="truncate">{inquiry.title}</span>
-                </p>
-                <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
-                  {inquiry.message}
-                </p>
-                <p className="mt-3 text-xs text-slate-400">
-                  {formatKoreanDateTime(inquiry.createdAt)}
-                </p>
-              </button>
-
-              <div className="mt-4 flex gap-2">
-                <select
-                  value={inquiry.status}
-                  onChange={(e) =>
-                    handleChangeStatus(inquiry.id, e.target.value as ContactInquiryStatus)
-                  }
-                  className="h-10 flex-1 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-700"
-                >
-                  <option value="pending">대기</option>
-                  <option value="answered">답변 완료</option>
-                  <option value="closed">종료</option>
-                </select>
-
-                <button
-                  type="button"
-                  onClick={() => handleDeleteInquiry(inquiry)}
-                  className="h-10 rounded-xl border border-red-200 px-4 text-sm font-semibold text-red-500"
-                >
-                  삭제
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {!isLoading && inquiries.length === 0 && (
-          <div className="px-4 py-12 text-center text-sm font-semibold text-slate-500">
-            등록된 문의가 없습니다.
-          </div>
+            {!isLoading && inquiries.length === 0 && (
+              <div className="px-4 py-12 text-center text-sm font-semibold text-slate-500">
+                등록된 문의가 없습니다.
+              </div>
+            )}
+
+            {isLoading && (
+              <div className="px-4 py-12 text-center text-sm font-semibold text-slate-500">
+                문의 목록을 불러오는 중입니다.
+              </div>
+            )}
+          </>
         )}
 
-        {isLoading && (
-          <div className="px-4 py-12 text-center text-sm font-semibold text-slate-500">
-            문의 목록을 불러오는 중입니다.
-          </div>
-        )}
+        {activeTab === 'deleteLogs' && <AdminContactDeleteLogs />}
       </div>
 
       {selectedInquiry && (

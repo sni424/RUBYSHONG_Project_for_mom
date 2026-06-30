@@ -149,3 +149,19 @@ export type ProductDeleteLog = {
     role: string;
   };
 };
+
+//문의 삭제 이력 조회
+export type ContactInquiryDeleteLog = {
+  id: number;
+  contactInquiryId: number;
+  title: string;
+  name: string;
+  phone: string;
+  deletedData: Record<string, unknown>;
+  createdAt: string;
+  deletedBy: {
+    id: number;
+    email: string;
+    role: string;
+  };
+};

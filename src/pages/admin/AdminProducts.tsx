@@ -11,6 +11,7 @@ import type { Product, ProductDeleteLog } from '@/constants/type';
 import { formatKoreanDateTime } from '@/constants/utils';
 import ProductEditModal from '@/components/modals/ProductEditModal';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const formatPrice = (price: number) => `${price.toLocaleString()}원`;
 
@@ -26,6 +27,7 @@ const getCategoryLabel = (category: string) => {
 };
 
 const AdminProducts = () => {
+  const navigate = useNavigate();
   // 서버에서 가져온 상품 목록
   const [products, setProducts] = useState<Product[]>([]);
 
@@ -305,6 +307,13 @@ const AdminProducts = () => {
       setProductDeleteLogs(data);
     } catch (error) {
       console.error(error);
+
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        localStorage.removeItem('adminToken');
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+        navigate('/admin/login');
+        return;
+      }
       setErrorMessage('상품 삭제 이력을 불러오지 못했습니다.');
     } finally {
       setIsDeleteLogLoading(false);
