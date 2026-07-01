@@ -41,8 +41,15 @@ export const createReservation = async (reservationData: CreateReservationPayloa
 
 // 관리자 예약 목록 가져오기
 export const getAdminReservations = async (): Promise<Reservation[]> => {
+  // 관리자 토큰 가져오기
+  const token = localStorage.getItem('adminToken');
+
   // 관리자 예약 목록 API 요청
-  const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/reservations/admin`);
+  const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/reservations/admin`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   // 서버에서 받은 예약 배열 반환
   return response.data.data;
