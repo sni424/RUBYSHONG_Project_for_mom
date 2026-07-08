@@ -137,6 +137,12 @@ const AdminProducts = () => {
       setCurrentPage(1);
     } catch (error) {
       console.error(error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        localStorage.removeItem('adminToken');
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+        navigate('/admin/login');
+        return;
+      }
       setErrorMessage('상품 목록을 불러오지 못했습니다.');
     } finally {
       setIsLoading(false);

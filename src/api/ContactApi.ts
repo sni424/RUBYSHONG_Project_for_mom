@@ -21,8 +21,15 @@ export const createContactInquiry = async (contactData: CreateContactPayload) =>
 
 // 관리자 문의 목록 가져오기
 export const getAdminContactInquiries = async (): Promise<ContactInquiry[]> => {
+  // 관리자 토큰 가져오기
+  const token = localStorage.getItem('adminToken');
+
   // 백엔드 관리자 문의 목록 API 요청
-  const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/contacts/admin`);
+  const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/contacts/admin`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   // 서버에서 받은 문의 배열 반환
   return response.data.data;

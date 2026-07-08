@@ -13,11 +13,17 @@ export type ProductSearchParams = {
 
 // 상품 목록 가져오기
 export const getProducts = async (params?: ProductSearchParams): Promise<Product[]> => {
+  //토큰 확인
+  const token = localStorage.getItem('adminToken');
+
   // 백엔드 상품 목록 API 요청
   const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/products`, {
     params: {
       ...(params?.category ? { category: params.category } : {}),
       ...(params?.search ? { search: params.search } : {}),
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
   });
 

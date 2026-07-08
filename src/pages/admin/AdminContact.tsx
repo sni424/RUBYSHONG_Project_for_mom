@@ -8,6 +8,8 @@ import {
   updateContactInquiryStatus,
 } from '@/api/ContactApi';
 import AdminContactDeleteLogs from '@/components/admin/AdminContactDeleteLogs';
+import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const statusLabel: Record<ContactInquiryStatus, string> = {
   pending: '대기',
@@ -22,6 +24,7 @@ const statusStyle: Record<ContactInquiryStatus, string> = {
 };
 
 const AdminContact = () => {
+  const navigate = useNavigate();
   // 현재 보고 있는 탭
   const [activeTab, setActiveTab] = useState<'inquiries' | 'deleteLogs'>('inquiries');
   // 문의 목록
@@ -50,6 +53,13 @@ const AdminContact = () => {
       setInquiries(data);
     } catch (error) {
       console.error(error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        localStorage.removeItem('adminToken');
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+        navigate('/admin/login');
+        return;
+      }
+
       setErrorMessage('문의 목록을 불러오지 못했습니다.');
     } finally {
       // 문의 목록 로딩 종료
