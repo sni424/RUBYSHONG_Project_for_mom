@@ -53,6 +53,18 @@ const MobileNav = () => {
             </Link>
           ))}
 
+          <div className="mt-8 border-t border-border pt-6">
+            <div className="flex items-center gap-5 text-xs tracking-[0.2em] text-text-muted">
+              <Link to="/login" className="transition hover:text-accent">
+                LOGIN
+              </Link>
+              <span className="h-3 w-px bg-border" />
+              <Link to="/signup" className="transition hover:text-accent">
+                JOIN
+              </Link>
+            </div>
+          </div>
+
           <a
             href="https://www.instagram.com/naver_official/"
             target="_blank"

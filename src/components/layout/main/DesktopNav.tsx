@@ -1,5 +1,5 @@
 import { FaInstagram } from 'react-icons/fa6';
-import { NAV_ITEMS } from '@/constants/navigation';
+import { AUTH_NAV_ITEMS, NAV_ITEMS } from '@/constants/navigation';
 import { Link } from 'react-router';
 
 const DesktopNav = () => {
@@ -29,6 +29,20 @@ const DesktopNav = () => {
             {item.label}
           </Link>
         ))}
+
+        <span className="h-3 w-px bg-border" />
+
+        <div className="flex items-center gap-5">
+          {AUTH_NAV_ITEMS.map((item) => (
+            <Link
+              key={`DesktopAuthNav_${item.label}`}
+              to={item.href}
+              className="text-[11px] tracking-[0.2em] text-text-muted transition hover:text-accent"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
 
         <a
           href="https://www.instagram.com/naver_official/"

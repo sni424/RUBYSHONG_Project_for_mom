@@ -15,6 +15,7 @@ import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
 import AdminReservations from '@/pages/admin/AdminReservations';
 import AdminContact from '@/pages/admin/AdminContact';
+import SignupPage from './pages/SignUp';
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
         </Route>
 
+        <Route path="/signup" element={<SignupPage />} />
         <Route path="/admin">
           <Route element={<PublicOnlyRoute />}>
             <Route path="login" element={<AdminLogin />} />
