@@ -165,3 +165,37 @@ export type ContactInquiryDeleteLog = {
     role: string;
   };
 };
+
+export type SendPhoneVerificationCodePayload = {
+  phone: string;
+};
+
+export type VerifyPhoneCodePayload = {
+  phone: string;
+  code: string;
+};
+
+export type SignupPayload = {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+};
+
+export type LoginPayload = {
+  email: string;
+  password: string;
+};
+
+export type AuthUser = {
+  id: number;
+  email: string;
+  name: string;
+  phone: string | null;
+  phoneVerified: boolean;
+};
+
+export type LoginResponse = {
+  token: string;
+  user: AuthUser;
+};

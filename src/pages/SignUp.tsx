@@ -1,3 +1,5 @@
+import { sendPhoneVerificationCode, verifyPhoneCode } from '@/api/auth';
+import axios from 'axios';
 import { useState } from 'react';
 import { Link } from 'react-router';
 
@@ -15,6 +17,18 @@ const SignupPage = () => {
   // 비밀번호 보기 상태
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+
+  // 인증번호 발송 중 상태
+  const [isSendingCode, setIsSendingCode] = useState(false);
+
+  // 인증번호 발송 완료 여부
+  const [isCodeSent, setIsCodeSent] = useState(false);
+
+  // 휴대폰 인증 완료 여부
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+
+  // 인증번호 확인 중 상태
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
 
   // 약관 동의 상태
   const [agreements, setAgreements] = useState({
@@ -56,25 +70,79 @@ const SignupPage = () => {
   };
 
   // 휴대폰 인증번호 요청
-  const handleSendVerificationCode = () => {
+  const handleSendVerificationCode = async () => {
     if (!formData.phone) {
       alert('휴대폰 번호를 입력해주세요.');
       return;
     }
 
-    // TODO: 휴대폰 인증번호 발송 API 연결
-    alert('인증번호 발송 기능은 준비 중입니다.');
+    try {
+      // 인증번호 발송 버튼 로딩 시작
+      setIsSendingCode(true);
+
+      // 휴대폰 인증번호 발송 API 요청
+      const result = await sendPhoneVerificationCode({
+        phone: formData.phone,
+      });
+
+      // 인증번호 발송 완료 상태 저장
+      setIsCodeSent(true);
+
+      alert(`인증번호가 발송되었습니다.\n테스트 인증번호: ${result.data.code}`);
+    } catch (error) {
+      console.error(error);
+
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        alert(error.response.data.message);
+        return;
+      }
+
+      alert('인증번호 발송에 실패했습니다.');
+    } finally {
+      // 인증번호 발송 버튼 로딩 종료
+      setIsSendingCode(false);
+    }
   };
 
   // 휴대폰 인증번호 확인
-  const handleVerifyCode = () => {
+  const handleVerifyCode = async () => {
+    if (!formData.phone) {
+      alert('휴대폰 번호를 입력해주세요.');
+      return;
+    }
+
     if (!formData.verificationCode) {
       alert('인증번호를 입력해주세요.');
       return;
     }
 
-    // TODO: 휴대폰 인증번호 확인 API 연결
-    alert('인증번호 확인 기능은 준비 중입니다.');
+    try {
+      // 인증번호 확인 버튼 로딩 시작
+      setIsVerifyingCode(true);
+
+      // 휴대폰 인증번호 확인 API 요청
+      await verifyPhoneCode({
+        phone: formData.phone,
+        code: formData.verificationCode,
+      });
+
+      // 휴대폰 인증 완료 상태 저장
+      setIsPhoneVerified(true);
+
+      alert('휴대폰 인증이 완료되었습니다.');
+    } catch (error) {
+      console.error(error);
+
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        alert(error.response.data.message);
+        return;
+      }
+
+      alert('인증번호 확인에 실패했습니다.');
+    } finally {
+      // 인증번호 확인 버튼 로딩 종료
+      setIsVerifyingCode(false);
+    }
   };
 
   // 네이버 회원가입
@@ -215,9 +283,10 @@ const SignupPage = () => {
                 <button
                   type="button"
                   onClick={handleSendVerificationCode}
-                  className="h-13 w-full bg-[#ad843d] px-5 text-sm font-semibold text-white transition hover:bg-[#9b7433]"
+                  disabled={isSendingCode}
+                  className="h-13 w-full bg-[#ad843d] px-5 text-sm font-semibold text-white transition hover:bg-[#9b7433] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  인증번호 받기
+                  {isSendingCode ? '발송 중' : isCodeSent ? '다시 받기' : '인증번호 받기'}
                 </button>
               </div>
             </FormField>
@@ -233,12 +302,17 @@ const SignupPage = () => {
                 <button
                   type="button"
                   onClick={handleVerifyCode}
-                  className="h-13 w-full border border-[#d7c7b3] bg-white px-5 text-sm font-semibold text-[#9b7433] transition hover:bg-[#faf7f2]"
+                  disabled={isVerifyingCode || isPhoneVerified}
+                  className="h-13 w-full border border-[#d7c7b3] bg-white px-5 text-sm font-semibold text-[#9b7433] transition hover:bg-[#faf7f2] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  확인
+                  {isVerifyingCode ? '확인 중' : isPhoneVerified ? '인증 완료' : '확인'}
                 </button>
               </div>
-              <p className="mt-2 text-xs leading-5 text-[#7b7068]">인증번호는 3분간 유효합니다.</p>
+              <p className="mt-2 text-xs leading-5 text-[#7b7068]">
+                {isCodeSent
+                  ? '인증번호가 발송되었습니다. 3분 안에 입력해주세요.'
+                  : '인증번호는 3분간 유효합니다.'}
+              </p>
             </FormField>
 
             <div className="my-7 h-px bg-[#e7d9c8]" />

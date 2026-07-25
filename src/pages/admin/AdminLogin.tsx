@@ -1,4 +1,4 @@
-import { login } from '@/api/auth';
+import { adminLogin } from '@/api/auth';
 import axios from 'axios';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
@@ -16,7 +16,7 @@ const AdminLogin = () => {
     e.preventDefault();
     setError('');
     try {
-      const result = await login({ email, password });
+      const result = await adminLogin({ email, password });
       localStorage.setItem('adminToken', result.token);
       navigate('/admin');
     } catch (error) {
