@@ -40,6 +40,41 @@ const SignupPage = () => {
   // 전체 동의 여부
   const isAllAgreed = agreements.terms && agreements.privacy && agreements.marketing;
 
+  // 이메일 형식 검증
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  // 입력 완료 상태
+  const isNameComplete = formData.name.trim().length > 0;
+  const isEmailComplete = isValidEmail(formData.email);
+  // 비밀번호 형식 검증
+  // 영문 1개 이상, 숫자 1개 이상, 전체 8자 이상
+  const isValidPassword = (password: string) => {
+    return /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
+  };
+
+  // 비밀번호 입력 여부
+  const hasPasswordValue = formData.password.length > 0;
+
+  // 비밀번호 확인 입력 여부
+  const hasPasswordConfirmValue = formData.passwordConfirm.length > 0;
+
+  // 비밀번호 완료 여부
+  const isPasswordComplete = isValidPassword(formData.password);
+
+  // 비밀번호 에러 여부
+  const isPasswordError = hasPasswordValue && !isPasswordComplete;
+
+  // 비밀번호 확인 완료 여부
+  const isPasswordConfirmComplete =
+    hasPasswordConfirmValue && formData.password === formData.passwordConfirm;
+
+  // 비밀번호 확인 에러 여부
+  const isPasswordConfirmError =
+    hasPasswordConfirmValue && formData.password !== formData.passwordConfirm;
+  const isVerificationCodeComplete = isPhoneVerified;
+
   // 입력값 변경
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -234,6 +269,7 @@ const SignupPage = () => {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="이름을 입력해주세요"
+                isComplete={isNameComplete}
               />
             </FormField>
 
@@ -244,6 +280,7 @@ const SignupPage = () => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="이메일을 입력해주세요"
+                isComplete={isEmailComplete}
               />
               <p className="mt-2 text-xs leading-5 text-[#7b7068]">
                 이메일 인증은 진행하지 않으며, 로그인 및 안내 용도로 사용됩니다.
@@ -258,7 +295,14 @@ const SignupPage = () => {
                 onChange={handleChange}
                 onToggle={() => setShowPassword((prev) => !prev)}
                 placeholder="영문, 숫자를 포함하여 8자 이상 입력해주세요"
+                isComplete={isPasswordComplete}
+                isError={isPasswordError}
               />
+              {isPasswordError && (
+                <p className="mt-2 text-xs font-medium text-red-500">
+                  비밀번호는 영문과 숫자를 포함하여 8자 이상 입력해주세요.
+                </p>
+              )}
             </FormField>
 
             <FormField label="비밀번호 확인">
@@ -269,7 +313,14 @@ const SignupPage = () => {
                 onChange={handleChange}
                 onToggle={() => setShowPasswordConfirm((prev) => !prev)}
                 placeholder="비밀번호를 다시 입력해주세요"
+                isComplete={isPasswordConfirmComplete}
+                isError={isPasswordConfirmError}
               />
+              {isPasswordConfirmError && (
+                <p className="mt-2 text-xs font-medium text-red-500">
+                  비밀번호가 일치하지 않습니다.
+                </p>
+              )}
             </FormField>
 
             <FormField label="휴대폰 번호">
@@ -298,6 +349,7 @@ const SignupPage = () => {
                   value={formData.verificationCode}
                   onChange={handleChange}
                   placeholder="인증번호를 입력해주세요"
+                  isComplete={isVerificationCodeComplete}
                 />
                 <button
                   type="button"
@@ -412,12 +464,14 @@ const TextInput = ({
   placeholder,
   onChange,
   type = 'text',
+  isComplete = false,
 }: {
   name: string;
   value: string;
   placeholder: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
+  isComplete?: boolean;
 }) => {
   return (
     <input
@@ -426,7 +480,11 @@ const TextInput = ({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="h-13 w-full border border-[#e2d5c4] bg-white px-4 text-sm outline-none placeholder:text-[#9d958d] focus:border-[#b08a48] sm:px-5"
+      className={`h-13 w-full border px-4 text-sm outline-none placeholder:text-[#9d958d] sm:px-5 ${
+        isComplete
+          ? 'border-[#b9c7df] bg-[#edf4ff] text-[#1f2937] focus:border-[#8da9d6]'
+          : 'border-[#e2d5c4] bg-white text-[#2d2520] focus:border-[#b08a48]'
+      }`}
     />
   );
 };
@@ -438,6 +496,8 @@ const PasswordInput = ({
   show,
   onChange,
   onToggle,
+  isComplete = false,
+  isError = false,
 }: {
   name: string;
   value: string;
@@ -445,7 +505,14 @@ const PasswordInput = ({
   show: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onToggle: () => void;
+  isComplete?: boolean;
+  isError?: boolean;
 }) => {
+  const inputStyle = isError
+    ? 'border-red-300 bg-red-50 text-red-900 focus:border-red-400'
+    : isComplete
+      ? 'border-[#b9c7df] bg-[#edf4ff] text-[#1f2937] focus:border-[#8da9d6]'
+      : 'border-[#e2d5c4] bg-white text-[#2d2520] focus:border-[#b08a48]';
   return (
     <div className="relative">
       <input
@@ -454,7 +521,7 @@ const PasswordInput = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="h-13 w-full border border-[#e2d5c4] bg-white px-4 pr-14 text-sm outline-none placeholder:text-[#9d958d] focus:border-[#b08a48] sm:px-5 sm:pr-16"
+        className={`h-13 w-full border px-4 pr-14 text-sm outline-none placeholder:text-[#9d958d] sm:px-5 sm:pr-16 ${inputStyle}`}
       />
       <button
         type="button"
