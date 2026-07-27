@@ -17,8 +17,17 @@ import AdminReservations from '@/pages/admin/AdminReservations';
 import AdminContact from '@/pages/admin/AdminContact';
 import SignupPage from './pages/SignUp';
 import OAuthCallbackPage from './pages/OAuthCallbackPage';
+import { useAuthStore } from './stores/authStore';
+import { useEffect } from 'react';
 
 const App = () => {
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+
+  useEffect(() => {
+    // 앱 첫 진입 시 로그인 상태 확인
+    checkAuth();
+  }, [checkAuth]);
+
   return (
     <>
       <Routes>

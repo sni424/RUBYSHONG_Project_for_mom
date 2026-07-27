@@ -8,5 +8,5 @@ export const NAV_ITEMS = [
 
 export const AUTH_NAV_ITEMS = [
   { label: 'LOGIN', href: '/login' },
-  { label: 'JOIN', href: '/signup' },
+  { label: 'SIGNUP', href: '/signup' },
 ] as const;

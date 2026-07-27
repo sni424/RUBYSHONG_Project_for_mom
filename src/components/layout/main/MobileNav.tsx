@@ -4,8 +4,12 @@ import { HiOutlineMenuAlt4, HiOutlineX } from 'react-icons/hi';
 import { NAV_ITEMS } from '@/constants/navigation';
 import Logo from '@/components/common/Logo';
 import { Link } from 'react-router';
+import { useAuthStore } from '@/stores/authStore';
 
 const MobileNav = () => {
+  //로그인 체크
+  const { isLoggedIn, logout } = useAuthStore();
+
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -55,13 +59,27 @@ const MobileNav = () => {
 
           <div className="mt-8 border-t border-border pt-6">
             <div className="flex items-center gap-5 text-xs tracking-[0.2em] text-text-muted">
-              <Link to="/login" className="transition hover:text-accent">
-                LOGIN
-              </Link>
-              <span className="h-3 w-px bg-border" />
-              <Link to="/signup" className="transition hover:text-accent">
-                JOIN
-              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link to="/mypage" className="transition hover:text-accent">
+                    MY PAGE
+                  </Link>
+
+                  <button type="button" onClick={logout} className="transition hover:text-accent">
+                    LOGOUT
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="transition hover:text-accent">
+                    LOGIN
+                  </Link>
+
+                  <Link to="/signup" className="transition hover:text-accent">
+                    SINGUP
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 

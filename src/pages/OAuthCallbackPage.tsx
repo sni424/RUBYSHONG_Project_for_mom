@@ -1,27 +1,32 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
+import { useAuthStore } from '@/stores/authStore';
 
 const OAuthCallbackPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const loginWithToken = useAuthStore((state) => state.loginWithToken);
 
   useEffect(() => {
-    // 백엔드에서 전달한 로그인 토큰 가져오기
-    const token = searchParams.get('token');
+    const handleOAuthCallback = async () => {
+      // 백엔드에서 redirect로 전달한 토큰 가져오기
+      const token = searchParams.get('token');
 
-    // 토큰이 없으면 로그인 실패 처리
-    if (!token) {
-      alert('로그인에 실패했습니다.');
-      navigate('/login');
-      return;
-    }
+      if (!token) {
+        alert('로그인에 실패했습니다.');
+        navigate('/login');
+        return;
+      }
 
-    // 일반 회원 토큰 저장
-    localStorage.setItem('userToken', token);
+      // 토큰 저장 후 현재 회원 정보 조회
+      await loginWithToken(token);
 
-    // 로그인 완료 후 메인 페이지로 이동
-    navigate('/');
-  }, [navigate, searchParams]);
+      // 로그인 완료 후 메인으로 이동
+      navigate('/');
+    };
+
+    handleOAuthCallback();
+  }, [loginWithToken, navigate, searchParams]);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f8f3ed] px-4 text-[#2d2520]">
