@@ -16,6 +16,7 @@ import AdminProducts from '@/pages/admin/AdminProducts';
 import AdminReservations from '@/pages/admin/AdminReservations';
 import AdminContact from '@/pages/admin/AdminContact';
 import SignupPage from './pages/SignUp';
+import OAuthCallbackPage from './pages/OAuthCallbackPage';
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
         </Route>
 
+        <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/admin">
           <Route element={<PublicOnlyRoute />}>

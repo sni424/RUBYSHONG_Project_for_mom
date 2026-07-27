@@ -182,8 +182,7 @@ const SignupPage = () => {
 
   // 네이버 회원가입
   const handleNaverSignup = () => {
-    // TODO: 네이버 OAuth API 연결
-    alert('네이버 회원가입은 준비 중입니다.');
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/naver`;
   };
 
   // 카카오 회원가입
@@ -413,24 +412,24 @@ const SignupPage = () => {
             </div>
 
             <div className="space-y-3">
+              {/* 네이버 회원가입 */}
               <button
                 type="button"
                 onClick={handleNaverSignup}
-                className="relative h-12 w-full border border-[#d7c7b3] bg-white px-12 text-sm font-semibold text-[#2d2520] transition hover:bg-[#faf7f2]"
+                className="flex h-12 w-full items-center justify-center gap-3 border border-[#e2d5c4] bg-white text-sm font-medium text-[#2d2520] transition hover:border-[#03c75a] hover:bg-[#f4fff8]"
               >
-                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-xl font-black text-[#03c75a] sm:left-8">
-                  N
-                </span>
+                <span className="font-bold text-[#03c75a]">N</span>
                 네이버로 시작하기
               </button>
 
+              {/* 카카오 회원가입 */}
               <button
                 type="button"
                 onClick={handleKakaoSignup}
-                className="relative h-12 w-full border border-[#d7c7b3] bg-white px-12 text-sm font-semibold text-[#2d2520] transition hover:bg-[#faf7f2]"
+                className="flex h-12 w-full items-center justify-center gap-3 border border-[#e2d5c4] bg-white text-sm font-medium text-[#2d2520] transition hover:border-[#fee500] hover:bg-[#fffbe8]"
               >
-                <span className="absolute left-5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded bg-[#fee500] text-xs font-black text-[#3c1e1e] sm:left-8">
-                  ●
+                <span className="rounded-sm bg-[#fee500] px-1.5 py-0.5 text-xs font-bold text-[#3c1e1e]">
+                  K
                 </span>
                 카카오로 시작하기
               </button>
