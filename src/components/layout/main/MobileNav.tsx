@@ -74,10 +74,6 @@ const MobileNav = () => {
                   <Link to="/login" className="transition hover:text-accent">
                     LOGIN
                   </Link>
-
-                  <Link to="/signup" className="transition hover:text-accent">
-                    SINGUP
-                  </Link>
                 </>
               )}
             </div>

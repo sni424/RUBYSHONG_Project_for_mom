@@ -62,13 +62,9 @@ export const signup = async (payload: SignupPayload): Promise<AuthUser> => {
 };
 
 // 로그인
-export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
-  // 백엔드 로그인 API 요청
-  const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, payload, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+export const userLogin = async (payload: LoginPayload): Promise<LoginResponse> => {
+  // 백엔드 일반 회원 로그인 API 요청
+  const response = await api.post('/api/auth/login', payload);
 
   // 로그인 토큰과 회원 정보 반환
   return response.data.data;
@@ -88,4 +84,14 @@ export const getMe = async (): Promise<AuthUser> => {
 
   // 회원 정보 반환
   return response.data.data;
+};
+
+const handleNaverLogin = () => {
+  // 네이버 로그인 시작 API로 이동
+  window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/naver`;
+};
+
+const handleKakaoLogin = () => {
+  // 카카오 로그인 시작 API로 이동
+  window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/kakao`;
 };

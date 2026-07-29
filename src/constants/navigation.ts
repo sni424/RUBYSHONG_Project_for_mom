@@ -6,7 +6,4 @@ export const NAV_ITEMS = [
   { label: 'CONTACT', href: 'contact' },
 ] as const;
 
-export const AUTH_NAV_ITEMS = [
-  { label: 'LOGIN', href: '/login' },
-  { label: 'SIGNUP', href: '/signup' },
-] as const;
+export const AUTH_NAV_ITEMS = [{ label: 'LOGIN', href: '/login' }] as const;

@@ -15,9 +15,11 @@ import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
 import AdminReservations from '@/pages/admin/AdminReservations';
 import AdminContact from '@/pages/admin/AdminContact';
-import SignupPage from './pages/SignUp';
-import OAuthCallbackPage from './pages/OAuthCallbackPage';
-import { useAuthStore } from './stores/authStore';
+import SignupPage from '@/pages/SignUp';
+import OAuthCallbackPage from '@/pages/OAuthCallbackPage';
+import LoginPage from '@/pages/Login';
+import { useAuthStore } from '@/stores/authStore';
+
 import { useEffect } from 'react';
 
 const App = () => {
@@ -33,6 +35,7 @@ const App = () => {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/collection" element={<CollectionPage />} />
           <Route path="/stores" element={<Stores />} />
           <Route path="/about" element={<About />} />

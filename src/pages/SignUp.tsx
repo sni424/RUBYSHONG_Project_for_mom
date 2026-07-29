@@ -1,9 +1,11 @@
-import { sendPhoneVerificationCode, verifyPhoneCode } from '@/api/auth';
+import { sendPhoneVerificationCode, signup, verifyPhoneCode } from '@/api/auth';
 import axios from 'axios';
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 const SignupPage = () => {
+  const navigate = useNavigate();
+
   // 회원가입 입력값
   const [formData, setFormData] = useState({
     name: '',
@@ -29,6 +31,8 @@ const SignupPage = () => {
 
   // 인증번호 확인 중 상태
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 약관 동의 상태
   const [agreements, setAgreements] = useState({
@@ -192,7 +196,7 @@ const SignupPage = () => {
   };
 
   // 회원가입 제출
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.password || !formData.passwordConfirm) {
@@ -200,8 +204,8 @@ const SignupPage = () => {
       return;
     }
 
-    if (formData.password.length < 8) {
-      alert('비밀번호는 8자 이상 입력해주세요.');
+    if (!isValidPassword(formData.password)) {
+      alert('비밀번호는 영문과 숫자를 포함하여 8자 이상 입력해주세요.');
       return;
     }
 
@@ -210,18 +214,50 @@ const SignupPage = () => {
       return;
     }
 
+    if (!formData.phone) {
+      alert('휴대폰 번호를 입력해주세요.');
+      return;
+    }
+
+    if (!isPhoneVerified) {
+      alert('휴대폰 인증을 완료해주세요.');
+      return;
+    }
+
     if (!agreements.terms || !agreements.privacy) {
       alert('필수 약관에 동의해주세요.');
       return;
     }
 
-    // TODO: 회원가입 API 연결
-    console.log({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      phone: formData.phone,
-    });
+    try {
+      // 회원가입 버튼 로딩 시작
+      setIsSubmitting(true);
+
+      // 회원가입 API 요청
+      await signup({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+      });
+
+      alert('회원가입이 완료되었습니다. 로그인해주세요.');
+
+      // 회원가입 완료 후 로그인 페이지로 이동
+      navigate('/login');
+    } catch (error) {
+      console.error(error);
+
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        alert(error.response.data.message);
+        return;
+      }
+
+      alert('회원가입에 실패했습니다.');
+    } finally {
+      // 회원가입 버튼 로딩 종료
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -229,7 +265,7 @@ const SignupPage = () => {
       <div className="mx-auto w-full max-w-4xl">
         <header className="mb-7 text-center sm:mb-8">
           <Link to="/" className="inline-block max-w-full">
-            <h1 className="break-words font-serif text-4xl tracking-[0.18em] text-[#2d2520] sm:text-6xl sm:tracking-[0.32em]">
+            <h1 className="wrap-break-word font-serif text-4xl tracking-[0.18em] text-[#2d2520] sm:text-6xl sm:tracking-[0.32em]">
               RUBYSHONG
             </h1>
             <p className="mt-3 text-xs tracking-[0.45em] text-[#3f352e] sm:mt-4 sm:text-sm sm:tracking-[0.55em]">
@@ -400,9 +436,10 @@ const SignupPage = () => {
 
             <button
               type="submit"
-              className="mt-7 h-14 w-full bg-[#ad843d] text-base font-semibold text-white transition hover:bg-[#9b7433] sm:h-15 sm:text-lg"
+              disabled={isSubmitting}
+              className="mt-7 h-14 w-full bg-[#ad843d] text-base font-semibold text-white transition hover:bg-[#9b7433] disabled:cursor-not-allowed disabled:opacity-60 sm:h-15 sm:text-lg"
             >
-              회원가입
+              {isSubmitting ? '가입 중' : '회원가입'}
             </button>
 
             <div className="my-6 flex items-center gap-4 text-sm text-[#7b7068]">
