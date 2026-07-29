@@ -54,11 +54,11 @@ const Footer = () => {
             </h3>
 
             <p className="mt-6 text-sm leading-8 text-text-secondary">
-              롯데백화점 본점 1F
+              롯데백화점 김포공항점
               <br />
-              서울 중구 남대문로 81
+              서울특별시 강서구 하늘길 38
               <br />
-              02-123-4567
+              02-6116-3177
               <br />
               10:30 - 20:00 (월-일)
             </p>

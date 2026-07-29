@@ -1,5 +1,7 @@
 import { CalendarDays, Info, MessageCircle, X } from 'lucide-react';
 import type { Product } from '@/constants/type';
+import { useNavigate } from 'react-router';
+import { useProductInquiryStore } from '@/stores/authStore';
 
 const formatPrice = (price: number) => `₩${price.toLocaleString()}`;
 
@@ -7,37 +9,37 @@ type ProductDetailModalProps = {
   product: Product | null;
   onClose: () => void;
 };
-const STORE_PHONE_NUMBER = '01033938107';
+// const STORE_PHONE_NUMBER = '01033938107';
 
 const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
+  const navigate = useNavigate();
+  const setProductInquiry = useProductInquiryStore((state) => state.setProductInquiry);
+
   if (!product) return null;
 
-  // 모바일 기기인지 확인
-  const isMobileDevice = () => {
-    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  };
+  // // 모바일 기기인지 확인
+  // const isMobileDevice = () => {
+  //   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  // };
 
-  // iOS 기기인지 확인
-  const isIOSDevice = () => {
-    return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  };
+  // // iOS 기기인지 확인
+  // const isIOSDevice = () => {
+  //   return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  // };
 
   // 상담 예약 문자 보내기
   const handleReservationSms = () => {
-    // PC에서는 문자 앱을 열 수 없으니 안내
-    if (!isMobileDevice()) {
-      alert('문자 상담은 모바일에서 이용해주세요.');
-      return;
-    }
+    // 문의할 상품 정보 전역 저장
+    setProductInquiry({
+      id: product.id,
+      name: product.name,
+      category: product.category,
+      price: product.finalPrice,
+      summary: product.summary,
+    });
 
-    // 상품명이 포함된 문자 내용
-    const message = `[루비숑 상담 예약]\n상품명: ${product.name}\n상담 예약을 문의드립니다.`;
-
-    // iOS는 &body, Android는 ?body가 더 안정적
-    const separator = isIOSDevice() ? '&' : '?';
-
-    // 문자 앱 열기
-    window.location.href = `sms:${STORE_PHONE_NUMBER}${separator}body=${encodeURIComponent(message)}`;
+    // 문의 페이지로 이동
+    navigate('/contact');
   };
 
   return (
@@ -105,7 +107,7 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
               className="flex h-13 items-center justify-center gap-3 bg-[#a77d49] text-base font-semibold text-white transition hover:bg-[#916c3e] cursor-pointer"
             >
               <CalendarDays size={21} strokeWidth={1.7} />
-              상담 예약하기
+              제품 문의하기
             </button>
 
             <a

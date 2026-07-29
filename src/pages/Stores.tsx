@@ -9,7 +9,7 @@ const storeInfo = [
   {
     icon: Store,
     label: '매장명',
-    values: ['RUBYSHONG 김포공항 국제선점'],
+    values: ['RUBYSHONG 김포공항점'],
   },
   {
     icon: MapPin,
@@ -24,7 +24,7 @@ const storeInfo = [
   {
     icon: Phone,
     label: '연락처',
-    values: ['02-1234-5678'],
+    values: ['02-6116-3177'],
   },
   {
     icon: MapPin,

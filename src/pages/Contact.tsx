@@ -2,6 +2,7 @@ import { Clock, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
 import { useState } from 'react';
 import contactHero from '@/assets/images/contact/contact-hero.webp';
 import { createContactInquiry } from '@/api/ContactApi';
+import { useAuthStore, useProductInquiryStore } from '@/stores/authStore';
 
 const STORE_PHONE_NUMBER = '01033938107';
 const KAKAO_CHANNEL_URL = 'http://pf.kakao.com/_qHBbX/chat';
@@ -12,13 +13,31 @@ const isMobileDevice = () => {
 };
 
 const Contact = () => {
+  // 로그인한 회원 정보 가져오기
+  const user = useAuthStore((state) => state.user);
+
+  // 상품 상세에서 넘어온 제품 문의 정보 가져오기
+  const productInquiry = useProductInquiryStore((state) => state.productInquiry);
+
+  // 문의 등록 후 제품 문의 정보 초기화
+  const clearProductInquiry = useProductInquiryStore((state) => state.clearProductInquiry);
+
   // 문의 폼 데이터
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    title: '',
-    message: '',
-  });
+  const [formData, setFormData] = useState(() => ({
+    // 로그인한 회원이면 이름 자동 입력
+    name: user?.name ?? '',
+
+    // 로그인한 회원이면 전화번호 자동 입력
+    phone: user?.phone ?? '',
+
+    // 제품 문의로 들어온 경우 제목 자동 입력
+    title: productInquiry ? `${productInquiry.name} 문의합니다.` : '',
+
+    // 제품 문의로 들어온 경우 문의 내용 자동 입력
+    message: productInquiry
+      ? `[제품 문의]\n상품명: ${productInquiry.name}\n가격: ${productInquiry.price.toLocaleString()}원\n상품 요약: ${productInquiry.summary}\n\n해당 제품에 대해 문의드립니다.`
+      : '',
+  }));
 
   // 문의 제출 중인지 확인
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,7 +93,7 @@ const Contact = () => {
       });
 
       alert('문의가 접수되었습니다.');
-
+      clearProductInquiry();
       // 문의 폼 초기화
       setFormData({
         name: '',
@@ -94,7 +113,7 @@ const Contact = () => {
   return (
     <main className="bg-[#fbf8f4] text-[#342b24]">
       <section
-        className="relative flex min-h-[420px] items-center overflow-hidden bg-cover bg-center px-6 md:min-h-[540px]"
+        className="relative flex min-h-105 items-center overflow-hidden bg-cover bg-center px-6 md:min-h-135"
         style={{
           backgroundImage: `url(${contactHero})`,
         }}
@@ -167,7 +186,7 @@ const Contact = () => {
             </h3>
 
             <div className="mt-12 grid gap-7 text-sm text-[#6f6258]">
-              <InfoRow icon={<Clock size={22} />} text={['10:30 - 20:00', '매달 수요일 휴무']} />
+              <InfoRow icon={<Clock size={22} />} text={['10:30 - 20:00']} />
               <InfoRow icon={<Phone size={22} />} text={['010-3393-8107']} />
               <InfoRow icon={<MapPin size={22} />} text={['서울특별시 강서구 하늘길 38']} />
             </div>
