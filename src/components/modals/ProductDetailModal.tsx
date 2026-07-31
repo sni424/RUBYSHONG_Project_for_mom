@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import { useCartStore } from '@/stores/cartStore';
 import { useProductInquiryStore } from '@/stores/productInquiryStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useCheckoutStore } from '@/stores/checkoutStore';
 
 const formatPrice = (price: number) => `₩${price.toLocaleString()}`;
 
@@ -22,6 +23,9 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
 
   //장바구니
   const addItem = useCartStore((state) => state.addItem);
+
+  //바로결제
+  const setCheckoutItems = useCheckoutStore((state) => state.setCheckoutItems);
 
   //로그인 검증
   const { isLoggedIn } = useAuthStore();
@@ -85,10 +89,23 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
   // 바로 결제 페이지로 이동
   const handleBuyNow = () => {
     if (!requireLogin()) return;
+
     if (isSoldOut) {
       showSoldOutAlert();
       return;
     }
+
+    // 바로 결제할 상품만 결제 상태에 저장
+    setCheckoutItems([
+      {
+        productId: product.id,
+        name: product.name,
+        thumbnailUrl: product.thumbnailUrl,
+        price: product.finalPrice,
+        quantity: 1,
+        stock: product.stock,
+      },
+    ]);
 
     navigate('/checkout');
   };

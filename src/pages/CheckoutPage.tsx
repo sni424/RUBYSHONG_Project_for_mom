@@ -1,17 +1,18 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuthStore } from '@/stores/authStore';
-import { useCartStore } from '@/stores/cartStore';
-
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk';
 import { createOrder } from '@/api/order';
+import { useCheckoutStore } from '@/stores/checkoutStore';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
 
   const user = useAuthStore((state) => state.user);
-  const items = useCartStore((state) => state.items);
-  const totalAmount = useCartStore((state) => state.totalAmount);
+
+  //바로결제 store
+  const items = useCheckoutStore((state) => state.items);
+  const totalAmount = useCheckoutStore((state) => state.totalAmount);
 
   const [formData, setFormData] = useState({
     name: user?.name ?? '',

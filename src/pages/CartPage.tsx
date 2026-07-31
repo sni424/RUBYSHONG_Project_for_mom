@@ -1,6 +1,7 @@
 import { Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useCartStore } from '@/stores/cartStore';
+import { useCheckoutStore } from '@/stores/checkoutStore';
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -9,6 +10,8 @@ const CartPage = () => {
   const totalAmount = useCartStore((state) => state.totalAmount);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
+  //결제를 위한
+  const setCheckoutItems = useCheckoutStore((state) => state.setCheckoutItems);
 
   const handleCheckout = () => {
     if (items.length === 0) {
@@ -16,11 +19,10 @@ const CartPage = () => {
       return;
     }
 
-    navigate('/checkout', {
-      state: {
-        source: 'cart',
-      },
-    });
+    // 장바구니 상품을 이번 결제 상품으로 저장
+    setCheckoutItems(items);
+    // 결제 페이지로 이동
+    navigate('/checkout');
   };
 
   return (
