@@ -3,11 +3,12 @@ import { FaInstagram } from 'react-icons/fa6';
 import { HiOutlineMenuAlt4, HiOutlineX } from 'react-icons/hi';
 import { NAV_ITEMS } from '@/constants/navigation';
 import Logo from '@/components/common/Logo';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
 
 const MobileNav = () => {
+  const navigate = useNavigate();
   //로그인 체크
   const { isLoggedIn, logout } = useAuthStore();
 
@@ -15,6 +16,12 @@ const MobileNav = () => {
   const totalQuantity = useCartStore((state) => state.totalQuantity);
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+    navigate('/');
+  };
 
   return (
     <div className="flex h-16 w-full items-center justify-between px-5 lg:hidden">
@@ -60,16 +67,18 @@ const MobileNav = () => {
               {item.label}
             </Link>
           ))}
-          <Link
-            to="/cart"
-            onClick={() => setIsOpen(false)}
-            className="border-b border-line py-6 text-sm tracking-[0.18em] text-text-secondary transition hover:text-accent"
-          >
-            CART
-            {totalQuantity > 0 && (
-              <span className="ml-2 text-xs tracking-normal text-accent">({totalQuantity})</span>
-            )}
-          </Link>
+          {isLoggedIn && (
+            <Link
+              to="/cart"
+              onClick={() => setIsOpen(false)}
+              className="border-b border-line py-6 text-sm tracking-[0.18em] text-text-secondary transition hover:text-accent"
+            >
+              CART
+              {totalQuantity > 0 && (
+                <span className="ml-2 text-xs tracking-normal text-accent">({totalQuantity})</span>
+              )}
+            </Link>
+          )}
           <div className="mt-8 border-t border-border pt-6">
             <div className="flex items-center gap-5 text-xs tracking-[0.2em] text-text-muted">
               {isLoggedIn ? (
@@ -84,10 +93,7 @@ const MobileNav = () => {
 
                   <button
                     type="button"
-                    onClick={() => {
-                      logout();
-                      setIsOpen(false);
-                    }}
+                    onClick={handleLogout}
                     className="transition hover:text-accent"
                   >
                     LOGOUT

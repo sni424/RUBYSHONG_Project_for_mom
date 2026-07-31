@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/stores/authStore';
 import {
   LayoutDashboard,
   Package,
@@ -31,8 +32,10 @@ const navItems = [
 const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
   const navigate = useNavigate();
 
+  const { logout } = useAuthStore();
+
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
+    logout();
     navigate('/admin/login');
   };
   return (

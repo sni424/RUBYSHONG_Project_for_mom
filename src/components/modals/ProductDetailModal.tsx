@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 
 import { useCartStore } from '@/stores/cartStore';
 import { useProductInquiryStore } from '@/stores/productInquiryStore';
+import { useAuthStore } from '@/stores/authStore';
 
 const formatPrice = (price: number) => `₩${price.toLocaleString()}`;
 
@@ -15,9 +16,15 @@ type ProductDetailModalProps = {
 
 const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
   const navigate = useNavigate();
+
+  //제품정보
   const setProductInquiry = useProductInquiryStore((state) => state.setProductInquiry);
 
+  //장바구니
   const addItem = useCartStore((state) => state.addItem);
+
+  //로그인 검증
+  const { isLoggedIn } = useAuthStore();
 
   if (!product) return null;
 
@@ -28,15 +35,16 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
     alert('재고가 없는 상품입니다.');
   };
 
-  // // 모바일 기기인지 확인
-  // const isMobileDevice = () => {
-  //   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  // };
+  //로그인 해야만 가능
+  const requireLogin = () => {
+    if (isLoggedIn) {
+      return true;
+    }
 
-  // // iOS 기기인지 확인
-  // const isIOSDevice = () => {
-  //   return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  // };
+    alert('로그인 후 이용해주세요.');
+    navigate('/login');
+    return false;
+  };
 
   // 상담 예약 문자 보내기
   const handleReservationSms = () => {
@@ -55,6 +63,9 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
 
   // 장바구니에 상품 담기
   const handleAddToCart = () => {
+    //로그인 해야한 가능
+    if (!requireLogin()) return;
+
     if (isSoldOut) {
       showSoldOutAlert();
       return;
@@ -73,6 +84,7 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
 
   // 바로 결제 페이지로 이동
   const handleBuyNow = () => {
+    if (!requireLogin()) return;
     if (isSoldOut) {
       showSoldOutAlert();
       return;
