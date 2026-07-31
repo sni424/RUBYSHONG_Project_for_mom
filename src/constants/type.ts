@@ -200,9 +200,13 @@ export type LoginResponse = {
   user: AuthUser;
 };
 
-export type CreateOrderPayload = {
+export type CreateOrderItemPayload = {
   productId: number;
   quantity: number;
+};
+
+export type CreateOrderPayload = {
+  items: CreateOrderItemPayload[];
   ordererName: string;
   ordererPhone: string;
   userId?: number;

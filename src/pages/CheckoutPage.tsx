@@ -41,14 +41,12 @@ const CheckoutPage = () => {
     }
 
     try {
-      // 현재 백엔드 주문 생성 API는 상품 1개 기준
-      // 장바구니 첫 번째 상품으로 주문 생성
-      const firstItem = items[0];
-
       // 주문 생성 API 요청
       const order = await createOrder({
-        productId: firstItem.productId,
-        quantity: firstItem.quantity,
+        items: items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
         ordererName: formData.name,
         ordererPhone: formData.phone,
         userId: user?.id,
