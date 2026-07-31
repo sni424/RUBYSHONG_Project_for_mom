@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router';
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
 
+import { loadTossPayments } from '@tosspayments/tosspayments-sdk';
+import { createOrder } from '@/api/order';
+
 const CheckoutPage = () => {
   const navigate = useNavigate();
 
@@ -37,8 +40,57 @@ const CheckoutPage = () => {
       return;
     }
 
-    // 다음 단계에서 여기에 createOrder + Toss 결제창 연결
-    alert('결제 기능을 연결할 예정입니다.');
+    try {
+      // 현재 백엔드 주문 생성 API는 상품 1개 기준
+      // 장바구니 첫 번째 상품으로 주문 생성
+      const firstItem = items[0];
+
+      // 주문 생성 API 요청
+      const order = await createOrder({
+        productId: firstItem.productId,
+        quantity: firstItem.quantity,
+        ordererName: formData.name,
+        ordererPhone: formData.phone,
+        userId: user?.id,
+      });
+
+      // 토스 클라이언트 키 확인
+      const tossClientKey = import.meta.env.VITE_TOSS_CLIENT_KEY;
+
+      if (!tossClientKey) {
+        alert('토스페이먼츠 설정이 없습니다.');
+        return;
+      }
+
+      // 토스페이먼츠 SDK 로드
+      const tossPayments = await loadTossPayments(tossClientKey);
+
+      // 고객 고유키 생성
+      const customerKey = user ? `USER_${user.id}` : `GUEST_${crypto.randomUUID()}`;
+
+      // 결제창 객체 생성
+      const payment = tossPayments.payment({
+        customerKey,
+      });
+
+      // 토스 결제창 열기
+      await payment.requestPayment({
+        method: 'CARD',
+        amount: {
+          value: order.amount,
+          currency: 'KRW',
+        },
+        orderId: order.orderCode,
+        orderName: order.orderName,
+        customerName: formData.name,
+        customerMobilePhone: formData.phone,
+        successUrl: `${window.location.origin}/payment/success`,
+        failUrl: `${window.location.origin}/payment/fail`,
+      });
+    } catch (error) {
+      console.error(error);
+      alert('결제 요청에 실패했습니다.');
+    }
   };
 
   return (

@@ -24,6 +24,8 @@ import { useEffect } from 'react';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import PaymentFailPage from './pages/PaymentFailPage';
 
 const App = () => {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -47,6 +49,8 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/payment/success" element={<PaymentSuccessPage />} />
+          <Route path="/payment/fail" element={<PaymentFailPage />} />
         </Route>
 
         <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
