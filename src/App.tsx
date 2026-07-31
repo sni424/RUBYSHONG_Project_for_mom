@@ -21,6 +21,7 @@ import LoginPage from '@/pages/Login';
 import { useAuthStore } from '@/stores/authStore';
 
 import { useEffect } from 'react';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 const App = () => {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -35,6 +36,7 @@ const App = () => {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/collection" element={<CollectionPage />} />
           <Route path="/stores" element={<Stores />} />

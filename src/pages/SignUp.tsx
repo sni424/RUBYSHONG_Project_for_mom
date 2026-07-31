@@ -370,7 +370,7 @@ const SignupPage = () => {
                   type="button"
                   onClick={handleSendVerificationCode}
                   disabled={isSendingCode}
-                  className="h-13 w-full bg-[#ad843d] px-5 text-sm font-semibold text-white transition hover:bg-[#9b7433] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="h-13 w-full bg-[#ad843d] px-5 text-sm font-semibold text-white transition hover:bg-[#9b7433] cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isSendingCode ? '발송 중' : isCodeSent ? '다시 받기' : '인증번호 받기'}
                 </button>
@@ -390,7 +390,7 @@ const SignupPage = () => {
                   type="button"
                   onClick={handleVerifyCode}
                   disabled={isVerifyingCode || isPhoneVerified}
-                  className="h-13 w-full border border-[#d7c7b3] bg-white px-5 text-sm font-semibold text-[#9b7433] transition hover:bg-[#faf7f2] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="h-13 w-full border border-[#d7c7b3] bg-white px-5 text-sm font-semibold text-[#9b7433] transition cursor-pointer hover:bg-[#faf7f2] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isVerifyingCode ? '확인 중' : isPhoneVerified ? '인증 완료' : '확인'}
                 </button>
@@ -437,7 +437,7 @@ const SignupPage = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-7 h-14 w-full bg-[#ad843d] text-base font-semibold text-white transition hover:bg-[#9b7433] disabled:cursor-not-allowed disabled:opacity-60 sm:h-15 sm:text-lg"
+              className="mt-7 h-14 w-full bg-[#ad843d] text-base font-semibold cursor-pointer text-white transition hover:bg-[#9b7433] disabled:cursor-not-allowed disabled:opacity-60 sm:h-15 sm:text-lg"
             >
               {isSubmitting ? '가입 중' : '회원가입'}
             </button>
@@ -453,7 +453,7 @@ const SignupPage = () => {
               <button
                 type="button"
                 onClick={handleNaverSignup}
-                className="flex h-12 w-full items-center justify-center gap-3 border border-[#e2d5c4] bg-white text-sm font-medium text-[#2d2520] transition hover:border-[#03c75a] hover:bg-[#f4fff8]"
+                className="flex h-12 w-full items-center justify-center gap-3 border border-[#e2d5c4] bg-white text-sm font-medium text-[#2d2520] transition cursor-pointer hover:border-[#03c75a] hover:bg-[#f4fff8]"
               >
                 <span className="font-bold text-[#03c75a]">N</span>
                 네이버로 시작하기
@@ -463,7 +463,7 @@ const SignupPage = () => {
               <button
                 type="button"
                 onClick={handleKakaoSignup}
-                className="flex h-12 w-full items-center justify-center gap-3 border border-[#e2d5c4] bg-white text-sm font-medium text-[#2d2520] transition hover:border-[#fee500] hover:bg-[#fffbe8]"
+                className="flex h-12 w-full items-center justify-center gap-3 border border-[#e2d5c4] bg-white text-sm font-medium text-[#2d2520] cursor-pointer transition hover:border-[#fee500] hover:bg-[#fffbe8]"
               >
                 <span className="rounded-sm bg-[#fee500] px-1.5 py-0.5 text-xs font-bold text-[#3c1e1e]">
                   K
