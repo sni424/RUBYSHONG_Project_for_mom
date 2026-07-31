@@ -86,12 +86,12 @@ export const getMe = async (): Promise<AuthUser> => {
   return response.data.data;
 };
 
-const handleNaverLogin = () => {
-  // 네이버 로그인 시작 API로 이동
-  window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/naver`;
-};
+// const handleNaverLogin = () => {
+//   // 네이버 로그인 시작 API로 이동
+//   window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/naver`;
+// };
 
-const handleKakaoLogin = () => {
-  // 카카오 로그인 시작 API로 이동
-  window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/kakao`;
-};
+// const handleKakaoLogin = () => {
+//   // 카카오 로그인 시작 API로 이동
+//   window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/kakao`;
+// };
