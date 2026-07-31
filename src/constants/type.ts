@@ -199,3 +199,18 @@ export type LoginResponse = {
   token: string;
   user: AuthUser;
 };
+
+export type CreateOrderPayload = {
+  productId: number;
+  quantity: number;
+  ordererName: string;
+  ordererPhone: string;
+  userId?: number;
+};
+
+export type CreateOrderResponse = {
+  orderId: number;
+  orderCode: string;
+  orderName: string;
+  amount: number;
+};

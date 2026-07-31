@@ -22,6 +22,8 @@ import { useAuthStore } from '@/stores/authStore';
 
 import { useEffect } from 'react';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 const App = () => {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -43,6 +45,8 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/reservation" element={<Reservation />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
         </Route>
 
         <Route path="/oauth/callback" element={<OAuthCallbackPage />} />

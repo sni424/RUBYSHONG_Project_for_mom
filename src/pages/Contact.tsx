@@ -1,8 +1,9 @@
 import { Clock, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
 import { useState } from 'react';
 import contactHero from '@/assets/images/contact/contact-hero.webp';
-import { createContactInquiry } from '@/api/ContactApi';
-import { useAuthStore, useProductInquiryStore } from '@/stores/authStore';
+import { createContactInquiry } from '@/api/contact';
+import { useAuthStore } from '@/stores/authStore';
+import { useProductInquiryStore } from '@/stores/productInquiryStore';
 
 const STORE_PHONE_NUMBER = '01033938107';
 const KAKAO_CHANNEL_URL = 'http://pf.kakao.com/_qHBbX/chat';

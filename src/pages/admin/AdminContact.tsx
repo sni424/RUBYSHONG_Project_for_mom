@@ -6,7 +6,7 @@ import {
   deleteContactInquiry,
   getAdminContactInquiries,
   updateContactInquiryStatus,
-} from '@/api/ContactApi';
+} from '@/api/contact';
 import AdminContactDeleteLogs from '@/components/admin/AdminContactDeleteLogs';
 import axios from 'axios';
 import { useNavigate } from 'react-router';

@@ -2,10 +2,15 @@ import { FaInstagram } from 'react-icons/fa6';
 import { AUTH_NAV_ITEMS, NAV_ITEMS } from '@/constants/navigation';
 import { Link } from 'react-router';
 import { useAuthStore } from '@/stores/authStore';
+import { useCartStore } from '@/stores/cartStore';
+import { ShoppingBag } from 'lucide-react';
 
 const DesktopNav = () => {
   // 로그인 상태와 로그아웃 함수 가져오기
   const { isLoggedIn, logout } = useAuthStore();
+
+  // 장바구니 상품 개수 가져오기
+  const totalQuantity = useCartStore((state) => state.totalQuantity);
 
   return (
     <div className="hidden w-full grid-cols-[1fr_auto_1fr] items-center lg:grid">
@@ -67,7 +72,19 @@ const DesktopNav = () => {
               </Link>
             ))
           )}
+          <Link
+            to="/cart"
+            className="relative flex items-center transition hover:text-accent"
+            aria-label="장바구니"
+          >
+            <ShoppingBag size={15} strokeWidth={1.7} />
 
+            {totalQuantity > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#a77d49] px-1 text-[10px] font-semibold leading-none text-white">
+                {totalQuantity}
+              </span>
+            )}
+          </Link>
           <a
             href="https://www.instagram.com/naver_official/"
             target="_blank"

@@ -5,10 +5,14 @@ import { NAV_ITEMS } from '@/constants/navigation';
 import Logo from '@/components/common/Logo';
 import { Link } from 'react-router';
 import { useAuthStore } from '@/stores/authStore';
+import { useCartStore } from '@/stores/cartStore';
 
 const MobileNav = () => {
   //로그인 체크
   const { isLoggedIn, logout } = useAuthStore();
+
+  // 장바구니 상품 개수 가져오기
+  const totalQuantity = useCartStore((state) => state.totalQuantity);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -56,16 +60,36 @@ const MobileNav = () => {
               {item.label}
             </Link>
           ))}
-
+          <Link
+            to="/cart"
+            onClick={() => setIsOpen(false)}
+            className="border-b border-line py-6 text-sm tracking-[0.18em] text-text-secondary transition hover:text-accent"
+          >
+            CART
+            {totalQuantity > 0 && (
+              <span className="ml-2 text-xs tracking-normal text-accent">({totalQuantity})</span>
+            )}
+          </Link>
           <div className="mt-8 border-t border-border pt-6">
             <div className="flex items-center gap-5 text-xs tracking-[0.2em] text-text-muted">
               {isLoggedIn ? (
                 <>
-                  <Link to="/mypage" className="transition hover:text-accent">
+                  <Link
+                    to="/mypage"
+                    onClick={() => setIsOpen(false)}
+                    className="transition hover:text-accent"
+                  >
                     MY PAGE
                   </Link>
 
-                  <button type="button" onClick={logout} className="transition hover:text-accent">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      logout();
+                      setIsOpen(false);
+                    }}
+                    className="transition hover:text-accent"
+                  >
                     LOGOUT
                   </button>
                 </>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CalendarDays, Phone, RefreshCw } from 'lucide-react';
 import type { Reservation } from '@/constants/type';
-import { getAdminReservations } from '@/api/ReservationApi';
+import { getAdminReservations } from '@/api/reservation';
 
 const statusLabel = {
   pending: '대기',

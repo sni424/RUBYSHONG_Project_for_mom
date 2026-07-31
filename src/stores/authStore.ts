@@ -2,7 +2,6 @@
 import { create } from 'zustand';
 import { getMe } from '@/api/auth';
 import type { AuthUser } from '@/constants/type';
-import { persist } from 'zustand/middleware';
 
 type AuthState = {
   // 현재 로그인한 회원 정보
@@ -22,25 +21,6 @@ type AuthState = {
 
   // 로그아웃 처리
   logout: () => void;
-};
-
-type ProductInquiry = {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  summary: string;
-};
-
-type ProductInquiryState = {
-  // 현재 문의하려는 상품 정보
-  productInquiry: ProductInquiry | null;
-
-  // 상품 문의 정보 저장
-  setProductInquiry: (product: ProductInquiry) => void;
-
-  // 상품 문의 정보 초기화
-  clearProductInquiry: () => void;
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -101,28 +81,3 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     });
   },
 }));
-
-//제품 문의하기 전역처리
-export const useProductInquiryStore = create<ProductInquiryState>()(
-  persist(
-    (set) => ({
-      productInquiry: null,
-
-      setProductInquiry: (product) => {
-        set({
-          productInquiry: product,
-        });
-      },
-
-      clearProductInquiry: () => {
-        set({
-          productInquiry: null,
-        });
-      },
-    }),
-    {
-      // 새로고침해도 Contact 페이지에서 상품 정보 유지
-      name: 'product-inquiry-storage',
-    },
-  ),
-);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getContactInquiryDeleteLogs } from '@/api/ContactApi';
+import { getContactInquiryDeleteLogs } from '@/api/contact';
 import { formatKoreanDateTime } from '@/constants/utils';
 import type { ContactInquiryDeleteLog } from '@/constants/type';
 import { useNavigate } from 'react-router';

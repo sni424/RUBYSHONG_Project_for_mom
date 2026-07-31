@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 
 import reservationHero from '@/assets/images/home/hero.webp';
 import type { AvailableTimesResponse } from '@/constants/type';
-import { createReservation, getAvailableTimes } from '@/api/ReservationApi';
+import { createReservation, getAvailableTimes } from '@/api/reservation';
 
 const RESERVATION_TIMES = [
   '11:00',
