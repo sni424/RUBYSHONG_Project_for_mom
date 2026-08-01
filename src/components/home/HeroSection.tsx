@@ -36,16 +36,17 @@ const HeroSection = () => {
           </p>
 
           <Link
-            to={'/collection'}
+            to="/collection"
             className="
-              mt-10 border border-accent
-              px-8 py-4
-              text-sm tracking-[0.18em]
-              text-accent
-              transition
-              hover:bg-accent hover:text-white
-              cursor-pointer
-            "
+    mt-10 inline-flex items-center justify-center
+    border border-accent
+    px-8 py-4
+    text-sm tracking-[0.18em]
+    text-accent
+    transition
+    hover:bg-accent hover:text-white
+    cursor-pointer
+  "
           >
             COLLECTION 보기 →
           </Link>
