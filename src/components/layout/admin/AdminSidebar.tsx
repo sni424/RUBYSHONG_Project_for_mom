@@ -1,4 +1,5 @@
-import { useAuthStore } from '@/stores/authStore';
+import { useAdminAuthStore } from '@/stores/adminAuthStore';
+
 import {
   // LayoutDashboard,
   Package,
@@ -32,11 +33,17 @@ const navItems = [
 const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
   const navigate = useNavigate();
 
-  const { logout } = useAuthStore();
+  // 관리자 로그아웃 함수 가져오기
+  const { logoutAdmin } = useAdminAuthStore();
 
   const handleLogout = () => {
-    logout();
-    navigate('/admin/login');
+    // 관리자 토큰 삭제 및 로그인 상태 초기화
+    logoutAdmin();
+
+    // 관리자 로그인 페이지로 이동
+    navigate('/admin/login', {
+      replace: true,
+    });
   };
   return (
     <>

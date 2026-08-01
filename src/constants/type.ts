@@ -292,3 +292,63 @@ export type AdminOrder = {
   payment: AdminOrderPayment | null;
   histories?: AdminOrderHistory[];
 };
+
+export type AdminCustomerListItem = {
+  id: number;
+  email: string;
+  name: string;
+  phone: string | null;
+  phoneVerified: boolean;
+  provider: 'naver' | 'kakao' | null;
+  providerId: string | null;
+  orderCount: number;
+  paidOrderCount: number;
+  totalPaidAmount: number;
+  lastOrderAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AdminCustomerDetail = AdminCustomerListItem & {
+  orders: Array<{
+    id: number;
+    orderCode: string;
+    status: string;
+    totalAmount: number;
+    ordererName: string;
+    ordererPhone: string;
+    createdAt: string;
+    items: Array<{
+      id: number;
+      productName: string;
+      quantity: number;
+      price: number;
+      amount: number;
+      thumbnailUrl: string;
+    }>;
+  }>;
+  reservations: Array<{
+    id: number;
+    name: string;
+    phone: string;
+    visitDate: string;
+    visitTime: string;
+    status: string;
+    createdAt: string;
+  }>;
+  contactInquiries: Array<{
+    id: number;
+    name: string;
+    phone: string;
+    title: string;
+    status: string;
+    createdAt: string;
+  }>;
+  summary: {
+    orderCount: number;
+    paidOrderCount: number;
+    totalPaidAmount: number;
+    reservationCount: number;
+    contactInquiryCount: number;
+  };
+};

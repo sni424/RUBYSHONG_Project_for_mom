@@ -11,7 +11,6 @@ import PublicOnlyRoute from '@/routes/PublicOnlyRoute';
 import ProtectedRoute from '@/routes/ProtectedRoute';
 import MainLayout from '@/components/layout/main/MainLayout';
 import AdminLayout from '@/components/layout/admin/AdminLayout';
-import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
 import AdminReservations from '@/pages/admin/AdminReservations';
 import AdminContact from '@/pages/admin/AdminContact';
@@ -27,6 +26,7 @@ import CheckoutPage from '@/pages/CheckoutPage';
 import PaymentSuccessPage from '@/pages/PaymentSuccessPage';
 import PaymentFailPage from '@/pages/PaymentFailPage';
 import AdminOrders from '@/pages/admin/AdminOrders';
+import AdminCustomers from './pages/admin/AdminCustomers';
 
 const App = () => {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -63,11 +63,12 @@ const App = () => {
 
           <Route element={<ProtectedRoute />}>
             <Route element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
+              {/* <Route index element={<AdminDashboard />} /> */}
               <Route path="products" element={<AdminProducts />} />
               <Route path="reservation" element={<AdminReservations />} />
               <Route path="contact" element={<AdminContact />} />
               <Route path="orders" element={<AdminOrders />} />
+              <Route path="customers" element={<AdminCustomers />} />
             </Route>
           </Route>
         </Route>

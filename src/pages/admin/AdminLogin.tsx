@@ -18,7 +18,7 @@ const AdminLogin = () => {
     try {
       const result = await adminLogin({ email, password });
       localStorage.setItem('adminToken', result.token);
-      navigate('/admin');
+      navigate('/admin/products');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || '로그인에 실패했습니다.');
