@@ -1,4 +1,5 @@
 import heroImage from '@/assets/images/home/hero.webp';
+import { Link } from 'react-router';
 
 const HeroSection = () => {
   return (
@@ -34,8 +35,8 @@ const HeroSection = () => {
             당신의 가장 빛나는 순간을 위한 주얼리.
           </p>
 
-          <button
-            type="button"
+          <Link
+            to={'/collection'}
             className="
               mt-10 border border-accent
               px-8 py-4
@@ -47,7 +48,7 @@ const HeroSection = () => {
             "
           >
             COLLECTION 보기 →
-          </button>
+          </Link>
         </div>
       </div>
     </section>
