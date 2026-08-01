@@ -218,3 +218,77 @@ export type CreateOrderResponse = {
   orderName: string;
   amount: number;
 };
+
+export type AdminOrderStatus =
+  | 'pending'
+  | 'paid'
+  | 'preparing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'failed'
+  | 'refunded';
+
+export type AdminOrderItem = {
+  id: number;
+  orderId: number;
+  productId: number;
+  productName: string;
+  thumbnailUrl: string;
+  price: number;
+  quantity: number;
+  amount: number;
+  createdAt: string;
+};
+
+export type AdminOrderPayment = {
+  id: number;
+  orderId: number;
+  paymentKey: string | null;
+  tossOrderId: string;
+  amount: number;
+  status: string;
+  method: string | null;
+  approvedAt: string | null;
+  failureReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AdminOrderUser = {
+  id: number;
+  email: string;
+  name: string;
+  phone: string | null;
+};
+
+export type AdminOrderHistory = {
+  id: number;
+  orderId: number;
+  changedById: number | null;
+  action: string;
+  beforeData: unknown;
+  afterData: unknown;
+  createdAt: string;
+  changedBy?: {
+    id: number;
+    email: string;
+    role: string;
+  } | null;
+};
+
+export type AdminOrder = {
+  id: number;
+  orderCode: string;
+  userId: number | null;
+  ordererName: string;
+  ordererPhone: string;
+  totalAmount: number;
+  status: AdminOrderStatus;
+  createdAt: string;
+  updatedAt: string;
+  user: AdminOrderUser | null;
+  items: AdminOrderItem[];
+  payment: AdminOrderPayment | null;
+  histories?: AdminOrderHistory[];
+};

@@ -21,11 +21,12 @@ import LoginPage from '@/pages/Login';
 import { useAuthStore } from '@/stores/authStore';
 
 import { useEffect } from 'react';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import CartPage from './pages/CartPage';
-import CheckoutPage from './pages/CheckoutPage';
-import PaymentSuccessPage from './pages/PaymentSuccessPage';
-import PaymentFailPage from './pages/PaymentFailPage';
+import PrivacyPolicy from '@/pages/PrivacyPolicy';
+import CartPage from '@/pages/CartPage';
+import CheckoutPage from '@/pages/CheckoutPage';
+import PaymentSuccessPage from '@/pages/PaymentSuccessPage';
+import PaymentFailPage from '@/pages/PaymentFailPage';
+import AdminOrders from '@/pages/admin/AdminOrders';
 
 const App = () => {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -66,6 +67,7 @@ const App = () => {
               <Route path="products" element={<AdminProducts />} />
               <Route path="reservation" element={<AdminReservations />} />
               <Route path="contact" element={<AdminContact />} />
+              <Route path="orders" element={<AdminOrders />} />
             </Route>
           </Route>
         </Route>

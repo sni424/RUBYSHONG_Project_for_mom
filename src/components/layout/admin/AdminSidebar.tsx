@@ -1,13 +1,13 @@
 import { useAuthStore } from '@/stores/authStore';
 import {
-  LayoutDashboard,
+  // LayoutDashboard,
   Package,
   ShoppingCart,
   Users,
   CalendarDays,
   MessageCircle,
-  BarChart3,
-  Settings,
+  // BarChart3,
+  // Settings,
   LogOut,
   X,
 } from 'lucide-react';
@@ -19,14 +19,14 @@ interface AdminSidebarProps {
 }
 
 const navItems = [
-  { label: '대시보드', path: '/admin', icon: LayoutDashboard },
+  // { label: '대시보드', path: '/admin', icon: LayoutDashboard },
   { label: '상품 관리', path: '/admin/products', icon: Package },
   { label: '주문 관리', path: '/admin/orders', icon: ShoppingCart },
   { label: '고객 관리', path: '/admin/customers', icon: Users },
   { label: '예약 관리', path: '/admin/reservation', icon: CalendarDays },
   { label: '문의 관리', path: '/admin/contact', icon: MessageCircle },
-  { label: '통계', path: '/admin/analytics', icon: BarChart3 },
-  { label: '설정', path: '/admin/settings', icon: Settings },
+  // { label: '통계', path: '/admin/analytics', icon: BarChart3 },
+  // { label: '설정', path: '/admin/settings', icon: Settings },
 ];
 
 const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
