@@ -55,9 +55,9 @@ const DesktopNav = () => {
         <nav className="flex items-center gap-5 text-[11px] tracking-[0.18em] text-text-muted">
           {isLoggedIn ? (
             <>
-              <Link to="/mypage" className="whitespace-nowrap transition hover:text-accent">
+              {/* <Link to="/mypage" className="whitespace-nowrap transition hover:text-accent">
                 ACCOUNT
-              </Link>
+              </Link> */}
 
               <button
                 type="button"
