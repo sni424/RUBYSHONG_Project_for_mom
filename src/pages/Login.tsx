@@ -59,8 +59,8 @@ const LoginPage = () => {
   };
 
   const handleKakaoLogin = () => {
-    // 카카오 로그인은 백엔드 구현 후 연결
-    alert('카카오 로그인은 준비 중입니다.');
+    // 카카오 로그인 시작 API로 이동
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/kakao`;
   };
 
   return (

@@ -191,8 +191,7 @@ const SignupPage = () => {
 
   // 카카오 회원가입
   const handleKakaoSignup = () => {
-    // TODO: 카카오 OAuth API 연결
-    alert('카카오 회원가입은 준비 중입니다.');
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/kakao`;
   };
 
   // 회원가입 제출
